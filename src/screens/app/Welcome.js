@@ -36,9 +36,11 @@ const Welcome = ({navigation}) => {
         </Text>
       </View>
       <View style={styles.ButtonC}>
-        <TouchableOpacity onPress={()=>{
+        <TouchableOpacity
+         onPress={()=>{
             navigation.navigate("Login")
-        }} style={styles.LoginB}>
+        }} 
+        style={styles.LoginB}>
           <LinearGradient
             colors={['#FF00FF', '#00FFFF']}
             start={{x: 0, y: 0}}
@@ -47,7 +49,11 @@ const Welcome = ({navigation}) => {
             <Text style={styles.ButtenT}>Login</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.RegisterB}>
+        <TouchableOpacity 
+              onPress={()=>{
+                 navigation.navigate("Register")
+             }} 
+        style={styles.RegisterB}>
           <Text style={styles.RegisterT}>Register</Text>
         </TouchableOpacity>
       </View>

@@ -14,7 +14,15 @@ import RNBootSplash from 'react-native-bootsplash';
 // Images
 import Back from '../../assets/Images/PNG/Welcome.png';
 import LinearGradient from 'react-native-linear-gradient';
-import Atrat, {Facebook, Gooogle, Hide, Lines, Pass, Show} from '../../assets/Images';
+import Atrat, {
+  Facebook,
+  Gooogle,
+  Hide,
+  Insta,
+  Lines,
+  Pass,
+  Show,
+} from '../../assets/Images';
 
 const Login = ({navigation}) => {
   useEffect(() => {
@@ -59,7 +67,7 @@ const Login = ({navigation}) => {
             <Text style={styles.inputtitle}>Password</Text>
             <TextInput
               secureTextEntry={pShow ? false : true}
-              placeholder="123123"
+              placeholder="********"
               placeholderTextColor={'#000'}
               style={styles.emailInput}
             />
@@ -85,7 +93,9 @@ const Login = ({navigation}) => {
             Forget Password?
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.LoginB}>
+        <TouchableOpacity onPress={()=>{
+          navigation.navigate("BottomTabs")
+        }} style={styles.LoginB}>
           <LinearGradient
             colors={['#FF00FF', '#00FFFF']}
             start={{x: 0, y: 0}}
@@ -105,7 +115,13 @@ const Login = ({navigation}) => {
           </Text>
           <Lines />
         </View>
-        <View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+            marginVertical: 10,
+          }}>
           <TouchableOpacity style={styles.googlT}>
             <Gooogle />
             <Text
@@ -121,12 +137,45 @@ const Login = ({navigation}) => {
                 width: 10,
               }}></View>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={{
-            backgroundColor:""
-          }}>
-            <Facebook/>
-          </TouchableOpacity> */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#FFF',
+              padding: 10,
+              borderRadius: 50,
+            }}>
+            <Facebook />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#FFF',
+              padding: 10,
+              borderRadius: 50,
+            }}>
+            <Insta />
+          </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Register');
+          }}
+          style={{
+            marginVertical: 30,
+            alignSelf: 'center',
+          }}>
+          <Text
+            style={{
+              color: '#FFF',
+              fontFamily: 'Outfit-Regular',
+            }}>
+            Not a member?{' '}
+            <Text
+              style={{
+                color: '#E00A9E',
+              }}>
+              Register Now
+            </Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -189,6 +238,7 @@ const styles = StyleSheet.create({
     padding: 0,
     fontSize: 16,
     borderRadius: 50,
+    color: '#000',
   },
   LoginB: {
     alignContent: 'center',
