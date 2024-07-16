@@ -7,6 +7,9 @@ import Login from '../screens/auth/Login'
 import Register from '../screens/auth/Register'
 import Dashboard from '../screens/app/Dashboard'
 import BottomTabs from './bottomTabs'
+import Store from '../screens/app/Store'
+import Withdraw from '../screens/app/Withdraw'
+import Upgrade from '../screens/app/Upgrade'
 
 const Routes = ({initialRouteName}) => {
 
@@ -42,6 +45,21 @@ const Stack=createNativeStackNavigator()
         <Stack.Screen
         name='BottomTabs'
         component={BottomTabs}
+        options={{headerShown:false}}
+        />
+        <Stack.Screen
+        name='Store'
+        component={Store}
+        options={{headerShown:false}}
+        />
+        <Stack.Screen
+        name='Withdraw'
+        component={Withdraw}
+        options={{headerShown:false}}
+        />
+        <Stack.Screen
+        name='Upgrade'
+        component={Upgrade}
         options={{headerShown:false}}
         />
     </Stack.Navigator>

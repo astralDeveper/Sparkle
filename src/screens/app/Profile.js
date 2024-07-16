@@ -110,6 +110,9 @@ const Profile = ({navigation}) => {
                 without Ads.
               </Text>
               <TouchableOpacity
+              onPress={()=>{
+                navigation.navigate("Upgrade")
+              }}
                 style={{
                   backgroundColor: '#FFF',
                   padding: 5,
@@ -131,6 +134,9 @@ const Profile = ({navigation}) => {
             <Crown1 />
           </View>
           <TouchableOpacity
+           onPress={()=>{
+            navigation.navigate("Withdraw")
+          }}
             style={{
               backgroundColor: '#3F3F3F',
               flexDirection: 'row',
@@ -167,6 +173,9 @@ const Profile = ({navigation}) => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+          onPress={()=>{
+            navigation.navigate("Store")
+          }}
             style={{
               backgroundColor: '#3F3F3F',
               flexDirection: 'row',
@@ -195,7 +204,10 @@ const Profile = ({navigation}) => {
             </View>
             <Redright />
           </TouchableOpacity>
-          <View
+          <TouchableOpacity
+            onPress={() => {
+              setModalVisible(true);
+            }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -221,12 +233,10 @@ const Profile = ({navigation}) => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                setModalVisible(true);
-              }}>
+            >
               <Whiteright />
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
           <View
             style={{
               flexDirection: 'row',

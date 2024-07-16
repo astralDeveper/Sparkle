@@ -213,3 +213,55 @@ export const BottomTabsIcons = Color => [
     source={require("./assets/Images/Icons/Pro.png")}
   />,
   ];
+  export const stroe=[
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'100',
+      amount:"5"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'200',
+      amount:"10"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'100',
+      amount:"5"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'200',
+      amount:"10"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'100',
+      amount:"5"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'200',
+      amount:"10"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'100',
+      amount:"5"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'200',
+      amount:"10"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'100',
+      amount:"5"
+    },
+    {
+      img:require("./assets/Images/Icons/G_d.png"),
+      quantity:'200',
+      amount:"10"
+    },
+  ]

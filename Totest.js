@@ -1,92 +1,94 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, Keyboard } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import Svg, { Polygon } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
 
-const DatePickerComponent = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const handleSelectDate = (date) => {
-    setSelectedDate(date);
-
-  };
-
-  const handlePress = () => {
-    Keyboard.dismiss();
-    setModalVisible(true);
-  };
-
+const CustomButton = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Select Date</Text>
-      <TouchableOpacity onPress={handlePress}>
-        <TextInput
-          style={styles.input}
-          placeholder="Select Date"
-          value={selectedDate.toDateString()}
-          editable={false}
-          pointerEvents="none"
+      <Svg height="50" width="100" style={styles.discountBadge}>
+        <Polygon points="0,0 100,0 0,50" fill="#FF3E3E" />
+      </Svg>
+      <Text style={styles.discountText}>10% OFF</Text>
+      <View style={styles.buttonContent}>
+        <Image
+          source={{ uri: 'https://example.com/diamond.png' }} // Replace with your image URL
+          style={styles.image}
         />
-      </TouchableOpacity>
-      <Modal
-        transparent={true}
-        visible={modalVisible}
-        animationType="slide"
-
+        <Text style={styles.itemText}>X 80</Text>
+        <TouchableOpacity style={styles.priceButton}>
+          <Text style={styles.priceText}>$10</Text>
+        </TouchableOpacity>
+      </View>
+      <LinearGradient
+        colors={['#E13E73', '#A13DFF']}
+        style={styles.gradientBackground}
       >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <DatePicker
-              date={selectedDate}
-              onDateChange={handleSelectDate}
-              mode="date"
-            />
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.optionText}>Done</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        <Text style={styles.popularText}>Most Popular</Text>
+      </LinearGradient>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
+    width: '100%',
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#2B2B2B',
+    marginBottom: 20,
+    position: 'relative',
   },
-  label: {
-    fontSize: 18,
+  discountBadge: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 60,
+    height: 30,
+  },
+  discountText: {
+    position: 'absolute',
+    top: 5,
+    left: 5,
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+    transform: [{ rotate: '-45deg' }],
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 20,
     marginBottom: 10,
   },
-  input: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingLeft: 10,
+  image: {
+    width: 30,
+    height: 30,
   },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  itemText: {
+    color: '#FFFFFF',
+    fontSize: 16,
   },
-  modalContainer: {
-    width: 300,
-    backgroundColor: 'white',
+  priceButton: {
+    backgroundColor: '#FF3E3E',
+    borderRadius: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+  },
+  priceText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  gradientBackground: {
+    padding: 10,
     borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
   },
-  option: {
-    paddingVertical: 10,
-  },
-  optionText: {
-    fontSize: 18,
+  popularText: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 16,
   },
 });
 
-export default DatePickerComponent;
+export default CustomButton;
