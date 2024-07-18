@@ -60,7 +60,7 @@ const Profile = ({navigation}) => {
               </Text>
             </View>
             <TouchableOpacity>
-              <Dots />
+              {/* <Dots /> */}
             </TouchableOpacity>
           </View>
           <TouchableOpacity
@@ -237,7 +237,10 @@ const Profile = ({navigation}) => {
               <Whiteright />
             </TouchableOpacity>
           </TouchableOpacity>
-          <View
+          <TouchableOpacity
+          onPress={()=>{
+          navigation.navigate("Help_Center")
+          }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -263,7 +266,7 @@ const Profile = ({navigation}) => {
               </Text>
             </View>
             <Whiteright />
-          </View>
+          </TouchableOpacity>
           <View
             style={{
               height: 2,

@@ -41,6 +41,9 @@ const Withdraw = ({navigation}) => {
             </Text>
           </View>
           <TouchableOpacity
+          onPress={()=>{
+            navigation.navigate("History")
+          }}
             style={{
               backgroundColor: '#A349A1',
               padding: 5,
@@ -160,6 +163,9 @@ const Withdraw = ({navigation}) => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity
+          onPress={()=>{
+            navigation.navigate("Congraj")
+          }}
           style={{
             borderWidth: 2,
             borderColor: '#A349A1',

@@ -187,6 +187,9 @@ const Store = ({navigation}) => {
             renderItem={({item, index}) => {
               return (
                 <TouchableOpacity
+                onPress={()=>{
+                  navigation.navigate("Deposit")
+                }}
                   style={{
                     backgroundColor: '#231C2C',
                     width: width * 0.4,

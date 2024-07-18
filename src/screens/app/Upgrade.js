@@ -22,7 +22,7 @@ import {
   Withdrwa,
 } from '../../assets/Images';
 
-const Withdraw = ({navigation}) => {
+const Upgrade = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
@@ -67,6 +67,9 @@ const Withdraw = ({navigation}) => {
             Activiting Premium will help you meet more people, faster.
           </Text>
           <Text
+          onPress={()=>{
+            navigation.navigate("Premium")
+          }}
             style={{
               color: '#FFF',
               fontSize: 18,
@@ -312,4 +315,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#120030',
   },
 });
-export default Withdraw;
+export default Upgrade;

@@ -162,7 +162,7 @@ const Register = ({navigation}) => {
             </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>{
-            navigation.navigate("Dashboard")
+            navigation.navigate("BottomTabs")
           }} style={styles.LoginB}>
           <LinearGradient
             colors={['#FF00FF', '#00FFFF']}

@@ -25,15 +25,7 @@ import Atrat, {
 } from '../../assets/Images';
 
 const Login = ({navigation}) => {
-  useEffect(() => {
-    const hideSplash = () => {
-      RNBootSplash.hide();
-    };
-    const timeoutId = setTimeout(hideSplash, 1000);
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []);
+
   const [pShow, setPShow] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
