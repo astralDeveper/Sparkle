@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import RNBootSplash from 'react-native-bootsplash';
 
 // Images
@@ -24,7 +24,9 @@ import Atrat, {
   Show,
 } from '../../assets/Images';
 
-const Login = ({navigation}) => {
+import { GoogleAuth } from '../../mocks/socialAuths';
+
+const Login = ({ navigation }) => {
 
   const [pShow, setPShow] = useState(false);
   return (
@@ -73,7 +75,7 @@ const Login = ({navigation}) => {
         </View>
 
         <TouchableOpacity
-           onPress={()=>{
+          onPress={() => {
             navigation.navigate("FogetP")
           }}
           style={{
@@ -88,13 +90,13 @@ const Login = ({navigation}) => {
             Forget Password?
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={()=>{
+        <TouchableOpacity onPress={() => {
           navigation.navigate("BottomTabs")
         }} style={styles.LoginB}>
           <LinearGradient
             colors={['#FF00FF', '#00FFFF']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={styles.Gradient}>
             <Text style={styles.ButtenT}>Login</Text>
           </LinearGradient>
@@ -104,7 +106,7 @@ const Login = ({navigation}) => {
           <Text
             style={[
               styles.Text1,
-              {marginTop: 0, marginHorizontal: 0, fontFamily: 'Outfit-Regular'},
+              { marginTop: 0, marginHorizontal: 0, fontFamily: 'Outfit-Regular' },
             ]}>
             Continue With
           </Text>
@@ -117,7 +119,8 @@ const Login = ({navigation}) => {
             justifyContent: 'space-around',
             marginVertical: 10,
           }}>
-          <TouchableOpacity style={styles.googlT}>
+          <TouchableOpacity style={styles.googlT}
+            onPress={async () => GoogleAuth(true)}>
             <Gooogle />
             <Text
               style={{
@@ -176,7 +179,7 @@ const Login = ({navigation}) => {
   );
 };
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#120030',
