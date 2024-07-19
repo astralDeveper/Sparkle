@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   popularContainer: {
     borderBottomWidth: 2,
     borderColor: '#F03197',
-    width: width * 0.2,
+    width: width * 0.22,
     marginLeft: 20,
     marginTop: 20,
   },

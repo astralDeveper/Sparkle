@@ -177,6 +177,9 @@ const Upgrade = ({navigation}) => {
           </View>
         </View>
         <TouchableOpacity
+           onPress={()=>{
+            navigation.navigate("Deposit")
+          }}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -217,6 +220,9 @@ const Upgrade = ({navigation}) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+           onPress={()=>{
+            navigation.navigate("Deposit")
+          }}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -257,6 +263,9 @@ const Upgrade = ({navigation}) => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+           onPress={()=>{
+            navigation.navigate("Deposit")
+          }}
           style={{
             flexDirection: 'row',
             alignItems: 'center',

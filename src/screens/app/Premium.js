@@ -174,6 +174,9 @@ import {
             </View>
           </View>
           <TouchableOpacity
+             onPress={()=>{
+              navigation.navigate("Deposit")
+            }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -214,6 +217,9 @@ import {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
+             onPress={()=>{
+              navigation.navigate("Deposit")
+            }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -254,6 +260,9 @@ import {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
+          onPress={()=>{
+            navigation.navigate("Deposit")
+          }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',

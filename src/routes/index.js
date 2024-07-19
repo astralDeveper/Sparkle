@@ -23,6 +23,7 @@ import Splash from '../screens/auth/Splash'
 import Premium from '../screens/app/Premium'
 import Deposit from '../screens/app/Deposit'
 import Congraj from '../screens/app/Congraj'
+import FogetP from '../screens/app/FogetP'
 
 const Routes = ({initialRouteName}) => {
 
@@ -133,6 +134,11 @@ const Stack=createNativeStackNavigator()
         <Stack.Screen
         name='Congraj'
         component={Congraj}
+        options={{headerShown:false}}
+        />
+        <Stack.Screen
+        name='FogetP'
+        component={FogetP}
         options={{headerShown:false}}
         />
     </Stack.Navigator>

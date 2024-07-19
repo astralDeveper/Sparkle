@@ -101,7 +101,7 @@ const Messege = ({navigation}) => {
         horizontal={true}
         style={styles.scrollView}
         onMomentumScrollEnd={handleMomentumScrollEnd}>
-        <View style={styles.section}>
+        <View style={[styles.section, {width: width}]}>
           <ScrollView>
             <FlatList
               contentContainerStyle={{
@@ -177,60 +177,77 @@ const Messege = ({navigation}) => {
             />
           </ScrollView>
         </View>
-        <View style={styles.section}>
+        <View
+          style={[
+            styles.section,
+            {
+              width: width * 1.1,
+              alignItems: 'center',
+              paddingLeft:width*0.06
+              
+            },
+          ]}>
           <ScrollView>
-            <FlatList
-              contentContainerStyle={{
-                marginTop: 30,
-              }}
-              data={Freiend}
-              renderItem={({item, index}) => {
-                return (
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: width * 0.85,
-                      alignSelf: 'center',
-                      marginVertical: 10,
-                      backgroundColor: '#343434',
-                      padding: 10,
-                      borderRadius: 10,
-                    }}>
-                    <Image
-                      source={item.pic}
-                      style={{height: 30, width: 30, borderRadius: 100}}
-                    />
-                    <View
+            <View
+              style={{
+                width: width * 1.1,
+                alignItems: 'center',
+              }}>
+              <FlatList
+                contentContainerStyle={{
+                  marginTop: 30,
+                  alignItems: 'center',
+                  width: width * 1.1,
+                }}
+                data={Freiend}
+                renderItem={({item, index}) => {
+                  return (
+                    <TouchableOpacity
                       style={{
-                        width: width * 0.65,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: width * 0.85,
+                        alignSelf: 'center',
+                        marginVertical: 10,
+                        backgroundColor: '#343434',
+                        padding: 10,
+                        borderRadius: 10,
                       }}>
+                      <Image
+                        source={item.pic}
+                        style={{height: 30, width: 30, borderRadius: 100}}
+                      />
+                      <View
+                        style={{
+                          width: width * 0.65,
+                        }}>
+                        <Text
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                          style={{
+                            color: '#FFF',
+                            fontSize: 18,
+                            fontFamily: 'Outfit-Regular',
+                          }}>
+                          {item.Name}
+                        </Text>
+                      </View>
                       <Text
                         numberOfLines={1}
                         ellipsizeMode="tail"
                         style={{
-                          color: '#FFF',
-                          fontSize: 18,
-                          fontFamily: 'Outfit-Regular',
+                          color: 'rgba(255,255,255,0.8)',
+                          fontSize: 13,
+                          fontFamily: 'Outfit-Light',
                         }}>
-                        {item.Name}
+                        {item.time}
                       </Text>
-                    </View>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={{
-                        color: 'rgba(255,255,255,0.8)',
-                        fontSize: 13,
-                        fontFamily: 'Outfit-Light',
-                      }}>
-                      {item.time}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
           </ScrollView>
         </View>
         <View style={styles.section}>
@@ -305,21 +322,21 @@ const Messege = ({navigation}) => {
                         justifyContent: 'space-around',
                         width: width * 0.8,
                       }}>
-                        <TouchableOpacity>
-                      <LinearGradient
-                        colors={['#E00A9E', '#8727F3']}
-                        start={{x: 0, y: 0}}
-                        end={{x: 1, y: 1}}
-                        style={{
-                          padding: 10,
-                          alignItems: 'center',
-                          borderRadius: 10,
-                          width: width * 0.25,
-                        }}>
-                        <Text style={{color: '#FFF', fontSize: 18}}>
-                          Confirm
-                        </Text>
-                      </LinearGradient>
+                      <TouchableOpacity>
+                        <LinearGradient
+                          colors={['#E00A9E', '#8727F3']}
+                          start={{x: 0, y: 0}}
+                          end={{x: 1, y: 1}}
+                          style={{
+                            padding: 10,
+                            alignItems: 'center',
+                            borderRadius: 10,
+                            width: width * 0.25,
+                          }}>
+                          <Text style={{color: '#FFF', fontSize: 18}}>
+                            Confirm
+                          </Text>
+                        </LinearGradient>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.buttonContainer}>
                         <LinearGradient
@@ -375,10 +392,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   section: {
-    width: width * 1.05, // Adjust the width of each section as needed
+    width: width, // Adjust the width of each section as needed
     // justifyContent: 'center',
     // alignItems: 'center',
-    paddingRight: width * 0.06,
+    // paddingRight: width * 0.06,
   },
   sectionText: {
     fontSize: 24,
