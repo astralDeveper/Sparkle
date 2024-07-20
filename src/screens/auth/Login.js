@@ -177,10 +177,8 @@ const Login = ({ navigation }) => {
             marginVertical: 10,
           }}>
           <TouchableOpacity style={styles.googlT}
-            onPress={async () =>
-              // GoogleAuth(true)
-             await FacebookAuth()
-
+            onPress={() =>
+              GoogleAuth(true)
             }>
             <Gooogle />
             <Text
@@ -197,6 +195,7 @@ const Login = ({ navigation }) => {
               }}></View>
           </TouchableOpacity>
           <TouchableOpacity
+          onPress={FacebookAuth}
             style={{
               backgroundColor: '#FFF',
               padding: 10,
