@@ -36,56 +36,7 @@ import {
 const Login = ({ navigation }) => {
 
   const [pShow, setPShow] = useState(false);
-  const [userInfo, setUserInfo] = useState({});
-
-  const logoutWithFacebook = () => {
-    LoginManager.logOut();
-    setUserInfo({});
-  };
-  const getInfoFromToken = (token) => {
-    const PROFILE_REQUEST_PARAMS = {
-      fields: {
-        string: 'id,name,first_name,last_name',
-      },
-    };
-
-    const profileRequest = new GraphRequest(
-      '/me',
-      { token, parameters: PROFILE_REQUEST_PARAMS },
-      (error, user) => {
-        if (error) {
-          console.log('login info has error: ' + error);
-        } else {
-          setUserInfo(user);
-          console.log('result:', user);
-        }
-      }
-    );
-    new GraphRequestManager().addRequest(profileRequest).start();
-  };
-
-  const loginWithFacebook = () => {
-    LoginManager.logInWithPermissions(['public_profile']).then(
-      (login) => {
-        if (login.isCancelled) {
-          console.log('Login cancelled');
-        } else {
-          AccessToken.getCurrentAccessToken().then((data) => {
-            const accessToken = data.accessToken.toString();
-            getInfoFromToken(accessToken);
-          });
-        }
-      },
-      (error) => {
-        console.log('Login fail with error: ' + error);
-      }
-    );
-  };
-
-  const isLogin = userInfo.name;
-  const buttonText = isLogin ? 'Logout With Facebook' : 'Login From Facebook';
-  const onPressButton = isLogin ? logoutWithFacebook : loginWithFacebook;
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View
