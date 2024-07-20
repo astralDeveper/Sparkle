@@ -36,7 +36,7 @@ import {
 const Login = ({ navigation }) => {
 
   const [pShow, setPShow] = useState(false);
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -129,7 +129,7 @@ const Login = ({ navigation }) => {
           }}>
           <TouchableOpacity style={styles.googlT}
             onPress={() =>
-              GoogleAuth(true)
+              GoogleAuth(true, navigation)
             }>
             <Gooogle />
             <Text
@@ -146,7 +146,7 @@ const Login = ({ navigation }) => {
               }}></View>
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={FacebookAuth}
+            onPress={FacebookAuth}
             style={{
               backgroundColor: '#FFF',
               padding: 10,

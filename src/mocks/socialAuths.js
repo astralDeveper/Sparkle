@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     GoogleSignin,
 } from '@react-native-google-signin/google-signin';
@@ -9,7 +10,7 @@ import {
     LoginManager,
 } from 'react-native-fbsdk';
 
-export const GoogleAuth = async (login) => {
+export const GoogleAuth = async (login, navigation) => {
     try {
         GoogleSignin.configure({
             androidClientId: '449651409650-p010emuojm700t834098sbve2kevtv9j.apps.googleusercontent.com',
@@ -19,7 +20,8 @@ export const GoogleAuth = async (login) => {
             await GoogleSignin.hasPlayServices().then((hasPlayService) => {
                 if (hasPlayService) {
                     GoogleSignin.signIn().then((userInfo) => {
-                        console.log(JSON.stringify(userInfo))
+                        AsyncStorage.setItem('userInfo', JSON.stringify(userInfo.user));
+                        navigation.navigate("BottomTabs")
                     }).catch((e) => {
                         console.log("ERROR IS: " + JSON.stringify(e));
                     })
