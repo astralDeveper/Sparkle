@@ -35,15 +35,12 @@ const Story_Added = ({ navigation, route }) => {
     };
 
     launchImageLibrary(options, (response) => {
-      console.log('Response = ', response);
-
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
         const source = { uri: response.assets[0].uri };
-        console.log('Source = ', source);
         setFilePath(source);
 
         // Check if the selected file is an image or video

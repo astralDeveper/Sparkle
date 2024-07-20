@@ -9,7 +9,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   BIg_Coin,
   Crown,
@@ -24,11 +24,37 @@ import {
   Whiteleft,
   Whiteright,
 } from '../../assets/Images';
-import {Image} from 'react-native';
+import { Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { launchImageLibrary } from 'react-native-image-picker';
 
-const Profile = ({navigation}) => {
+const Profile = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [filePath, setFilePath] = useState(null);
+
+  const chooseFile = () => {
+    let options = {
+      mediaType: 'photo', // 'photo', 'video', or 'mixed'
+      maxWidth: 300,
+      maxHeight: 550,
+      quality: 1,
+    };
+
+    launchImageLibrary(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else {
+        const source = { uri: response.assets[0].uri };
+        setFilePath(source);
+      }
+    });
+  };
+
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -110,9 +136,9 @@ const Profile = ({navigation}) => {
                 without Ads.
               </Text>
               <TouchableOpacity
-              onPress={()=>{
-                navigation.navigate("Upgrade")
-              }}
+                onPress={() => {
+                  navigation.navigate("Upgrade")
+                }}
                 style={{
                   backgroundColor: '#FFF',
                   padding: 5,
@@ -134,9 +160,9 @@ const Profile = ({navigation}) => {
             <Crown1 />
           </View>
           <TouchableOpacity
-           onPress={()=>{
-            navigation.navigate("Withdraw")
-          }}
+            onPress={() => {
+              navigation.navigate("Withdraw")
+            }}
             style={{
               backgroundColor: '#3F3F3F',
               flexDirection: 'row',
@@ -173,9 +199,9 @@ const Profile = ({navigation}) => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={()=>{
-            navigation.navigate("Store")
-          }}
+            onPress={() => {
+              navigation.navigate("Store")
+            }}
             style={{
               backgroundColor: '#3F3F3F',
               flexDirection: 'row',
@@ -238,9 +264,9 @@ const Profile = ({navigation}) => {
             </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={()=>{
-          navigation.navigate("Help_Center")
-          }}
+            onPress={() => {
+              navigation.navigate("Help_Center")
+            }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -314,13 +340,13 @@ const Profile = ({navigation}) => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}>
-                    <TouchableOpacity
-                    onPress={()=>{
-                        setModalVisible(false)
-                      }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(false)
+                  }}>
 
-                <Whiteleft />
-                    </TouchableOpacity>
+                  <Whiteleft />
+                </TouchableOpacity>
                 <Text
                   style={{
                     color: '#FFF',
@@ -335,13 +361,15 @@ const Profile = ({navigation}) => {
                   }}></View>
               </View>
               <TouchableOpacity
+                onPress={chooseFile}
                 style={{
                   width: width * 0.25,
                   alignSelf: 'center',
                   marginVertical: 20,
                 }}>
                 <Image
-                  source={require('../../assets/Images/Icons/Propic.png')}
+                  resizeMode='cover'
+                  source={filePath || require('../../assets/Images/Icons/Propic.png')}
                   style={{
                     height: height * 0.12,
                     width: width * 0.25,
@@ -368,8 +396,8 @@ const Profile = ({navigation}) => {
                   Name
                 </Text>
                 <TextInput
-                placeholder='William H.'
-                placeholderTextColor={"#FFF"}
+                  placeholder='William H.'
+                  placeholderTextColor={"#FFF"}
                   style={{
                     borderBottomWidth: 2,
                     borderColor: '#FFF',
@@ -381,7 +409,7 @@ const Profile = ({navigation}) => {
                 />
               </View>
               <View style={{
-                marginTop:20
+                marginTop: 20
               }}>
                 <Text
                   style={{
@@ -392,8 +420,8 @@ const Profile = ({navigation}) => {
                   Tagline
                 </Text>
                 <TextInput
-                placeholder='I am a dancer for last 4 years'
-                placeholderTextColor={"#FFF"}
+                  placeholder='I am a dancer for last 4 years'
+                  placeholderTextColor={"#FFF"}
                   style={{
                     borderBottomWidth: 2,
                     borderColor: '#FFF',
@@ -405,23 +433,23 @@ const Profile = ({navigation}) => {
                 />
               </View>
               <TouchableOpacity
-              onPress={()=>{
-                setModalVisible(false)
-              }}
-              style={{
-                margin:20,width:width*0.25,alignSelf:"center"
-              }} >
-          <LinearGradient
-            colors={['#FF00FF', '#00FFFF']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
-            style={{
-                padding:10,alignItems:"center",borderRadius:10,width:width*0.25
-            }}
-            >
-            <Text style={{color:"#FFF",fontSize:18}}>Update</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+                onPress={() => {
+                  setModalVisible(false)
+                }}
+                style={{
+                  margin: 20, width: width * 0.25, alignSelf: "center"
+                }} >
+                <LinearGradient
+                  colors={['#FF00FF', '#00FFFF']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    padding: 10, alignItems: "center", borderRadius: 10, width: width * 0.25
+                  }}
+                >
+                  <Text style={{ color: "#FFF", fontSize: 18 }}>Update</Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -429,7 +457,7 @@ const Profile = ({navigation}) => {
     </SafeAreaView>
   );
 };
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
