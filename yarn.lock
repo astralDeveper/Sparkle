@@ -3259,6 +3259,7 @@ __metadata:
     react-native-bootsplash: ^5.5.3
     react-native-date-picker: ^5.0.4
     react-native-fbsdk: ^3.0.0
+    react-native-image-picker: 7.1.0
     react-native-linear-gradient: ^2.8.3
     react-native-raw-bottom-sheet: ^3.0.0
     react-native-safe-area-context: ^4.10.8
@@ -8715,6 +8716,16 @@ __metadata:
   peerDependencies:
     react-native: ">=0.59.0"
   checksum: 86f389ef65248b2ad2c14a433dc3242951b0ce4b1035e7560846ea60948138f5bd1898b5acae575eb7ef1cb19a8453253d717d0e35bf47ca491ba654a4c6a251
+  languageName: node
+  linkType: hard
+
+"react-native-image-picker@npm:7.1.0":
+  version: 7.1.0
+  resolution: "react-native-image-picker@npm:7.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 7f5c16dbcde719367e8fea7e05dd0ca8cb4cb4d163ce3fd093440fde69ff536dfb12f8b14a82b3d306785b7a5609e99042a981050631aa91cffb0a410c056ef9
   languageName: node
   linkType: hard
 
