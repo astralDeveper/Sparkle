@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,24 @@ import { Image } from 'react-native';
 import Video from 'react-native-video';
 import { Crown, Left_Arrow, Play } from '../../assets/Images';
 import { Videos } from '../../Dummy';
+import { getStories } from '../../mocks/story';
 
 const Home = ({ navigation }) => {
   const videoRefs = useRef([]);
   const [playingIndex, setPlayingIndex] = useState(null);
+  const [stories, setStories] = useState(getStories);
+
+  const loadStories = async () => {
+    const data = await getStories();
+    setStories(data.stories);
+  };
+  useEffect(() => {
+    loadStories();
+  }, []);
 
   const handleVideoPress = (index) => {
     setPlayingIndex(playingIndex === index ? null : index);
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -31,9 +40,9 @@ const Home = ({ navigation }) => {
             // }}
             // style={styles.backButton}
             style={{
-              width:30
+              width: 30
             }}
-            >
+          >
             {/* // <Left_Arrow /> */}
           </TouchableOpacity>
           <Text style={styles.feedText}>Feed</Text>
@@ -43,21 +52,22 @@ const Home = ({ navigation }) => {
           <Text style={styles.popularText}>Popular</Text>
         </View>
         <FlatList
-          data={Videos}
+          data={stories}
           renderItem={({ item, index }) => (
-            <TouchableOpacity 
-            // onPress={()=>{
-            //     navigation.navigate("Story_Added",{data:item.vide})
-            // }}
-            key={index}>
+            <TouchableOpacity
+              // onPress={()=>{
+              //     navigation.navigate("Story_Added",{data:item.vide})
+              // }}
+              key={index}>
+                {console.log('item.media.path',item)}
               <View style={styles.profileContainer}>
                 <Image
-                  source={item.pic}
+                  source={Videos[0].pic}
                   style={styles.profileImage}
                 />
                 <View>
                   <Text style={styles.profileName}>{item.name}</Text>
-                  <Text style={styles.profileTime}>{item.time}</Text>
+                  <Text style={styles.profileTime}>{item.caption}</Text>
                 </View>
                 <Crown />
               </View>
@@ -67,12 +77,12 @@ const Home = ({ navigation }) => {
                   ref={(ref) => {
                     videoRefs.current[index] = ref;
                   }}
-                  source={item.vide}
+                  source={{uri : item.media.path}}
                   resizeMode='stretch'
                   paused={playingIndex !== index}
                   style={styles.video}
                 />
-               
+
               </TouchableOpacity>
             </TouchableOpacity>
           )}

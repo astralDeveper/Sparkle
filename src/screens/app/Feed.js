@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -16,10 +16,10 @@ import { Videos } from '../../Dummy';
 const Feed = ({ navigation }) => {
   const videoRefs = useRef([]);
   const [playingIndex, setPlayingIndex] = useState(null);
-
   const handleVideoPress = (index) => {
     setPlayingIndex(playingIndex === index ? null : index);
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,11 +41,11 @@ const Feed = ({ navigation }) => {
         <FlatList
           data={Videos}
           renderItem={({ item, index }) => (
-            <TouchableOpacity 
-            // onPress={()=>{
-            //     navigation.navigate("Story_Added",{data:item.vide})
-            // }}
-            key={index}>
+            <TouchableOpacity
+              // onPress={()=>{
+              //     navigation.navigate("Story_Added",{data:item.vide})
+              // }}
+              key={index}>
               <View style={styles.profileContainer}>
                 <Image
                   source={item.pic}
@@ -68,7 +68,7 @@ const Feed = ({ navigation }) => {
                   paused={playingIndex !== index}
                   style={styles.video}
                 />
-               
+
               </TouchableOpacity>
             </TouchableOpacity>
           )}

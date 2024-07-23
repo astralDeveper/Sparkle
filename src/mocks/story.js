@@ -27,3 +27,21 @@ export const addStory = async (data) => {
         console.log("Error--->", error.response.data.message)
     }
 }
+export const getStories = async () => {
+    try {
+        const acessToken = await AsyncStorage.getItem('acessToken');
+        const token = JSON.parse(acessToken);
+
+        const res = await axios.get(BASE_URL + 'get-stories',
+            {
+                headers: {
+                    'Authorization': token,
+                }
+            });
+
+        return res.data; // Corrected from res.date to res.data
+    } catch (error) {
+        console.log("Error--->", error)
+        console.log("Error--->", error.response.data.message)
+    }
+}
