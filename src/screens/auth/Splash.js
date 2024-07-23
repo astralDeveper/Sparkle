@@ -1,14 +1,18 @@
-import React, {useEffect} from 'react';
-import {View, StyleSheet, Image, Text, ImageBackground} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Image, Text, ImageBackground } from 'react-native';
 
-const Splash = ({navigation}) => {
-  const isAuth =  () => {
-      setTimeout(() => {
-         navigation.replace('Welcome')
-      }, 3000);
+const Splash = ({ navigation }) => {
+  const isAuth = async () => {
+    const acessToken = await AsyncStorage.getItem('acessToken');
+    const token = JSON.parse(acessToken);
+    setTimeout(() => {
+      if (token === null) navigation.replace('Welcome')
+      else navigation.replace('BottomTabs')
+    }, 3000);
   };
   useEffect(() => {
-      isAuth()
+    isAuth()
   }, []);
 
   return (
@@ -25,9 +29,9 @@ const Splash = ({navigation}) => {
         source={require('../../assets/logo-with-text-animation.gif')}
       />
       <Text style={{
-        fontFamily:'Outfit-SemiBold',
-        color:'white',
-        fontSize:45
+        fontFamily: 'Outfit-SemiBold',
+        color: 'white',
+        fontSize: 45
       }}>
         Sparkle
       </Text>

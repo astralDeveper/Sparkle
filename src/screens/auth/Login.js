@@ -29,7 +29,7 @@ import { PostApi } from '../../mocks/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
-  
+
   const [pShow, setPShow] = useState(false);
   const [values, setValues] = useState({});
 
@@ -43,8 +43,8 @@ const Login = ({ navigation }) => {
   const LoginHandler = async () => {
     try {
       const user = await PostApi(values, 'login');
-      await AsyncStorage.setItem('acessToken', user.token);
-      await AsyncStorage.setItem('userInfo', user.user);
+      await AsyncStorage.setItem("acessToken", JSON.stringify(user.token));
+      await AsyncStorage.setItem("userInfo", JSON.stringify(user.user));
       navigation.navigate("BottomTabs")
     } catch (error) {
       console.log("Error--->", error)

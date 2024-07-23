@@ -15,43 +15,21 @@ import { Crown, Em, Left_Arrow, Play, Send } from '../../assets/Images';
 import { Videos } from '../../Dummy';
 import LinearGradient from 'react-native-linear-gradient';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { chooseFile } from '../../mocks/global';
+import { addStory } from '../../mocks/story';
 
 const Story_Added = ({ navigation, route }) => {
-  const videoRefs = useRef([]);
   const [playingIndex, setPlayingIndex] = useState(null);
   const [filePath, setFilePath] = useState(null);
-  const [isImage, setIsImage] = useState(false);
+  const [caption, setCaption] = useState('');
 
   const handleVideoPress = () => {
     setPlayingIndex(!playingIndex);
   };
 
-  const chooseFile = () => {
-    let options = {
-      mediaType: 'mixed', // 'photo', 'video', or 'mixed'
-      maxWidth: 300,
-      maxHeight: 550,
-      quality: 1,
-    };
-
-    launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        const source = { uri: response.assets[0].uri };
-        setFilePath(source);
-
-        // Check if the selected file is an image or video
-        if (response.assets[0].type.startsWith('image')) {
-          setIsImage(true);
-        } else {
-          setIsImage(false);
-        }
-      }
-    });
-  };
+  const putStory = async () => {
+    if (caption.length > 0 && filePath) await addStory({ file: filePath, caption })
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -75,16 +53,12 @@ const Story_Added = ({ navigation, route }) => {
           }}>
           <TouchableOpacity onPress={() => handleVideoPress()}>
             {filePath ? (
-              isImage ? (
-                <Image source={filePath} style={styles.media} />
-              ) : (
-                <Video
-                  source={filePath}
-                  resizeMode="stretch"
-                  paused={playingIndex}
-                  style={styles.media}
-                />
-              )
+              <Video
+                source={{ uri: filePath.uri }}
+                resizeMode="stretch"
+                paused={playingIndex}
+                style={styles.media}
+              />
             ) : (
               <Video
                 source={require('../../assets/Video/Toshow.mp4')}
@@ -102,7 +76,7 @@ const Story_Added = ({ navigation, route }) => {
               justifyContent: 'space-around',
               width: width * 0.8,
             }}>
-            <TouchableOpacity onPress={chooseFile}>
+            <TouchableOpacity onPress={() => chooseFile(setFilePath)}>
               <LinearGradient
                 colors={['#E00A9E', '#8727F3']}
                 start={{ x: 0, y: 0 }}
@@ -151,11 +125,10 @@ const Story_Added = ({ navigation, route }) => {
                 width: width * 0.65,
                 color: '#FFF',
               }}
+              onChangeText={text => setCaption(text)}
             />
             <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Home');
-              }}>
+              onPress={putStory}>
               <Send />
             </TouchableOpacity>
           </View>
