@@ -10,7 +10,7 @@ import {
   Modal,
   Keyboard,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import RNBootSplash from 'react-native-bootsplash';
 
 // Images
@@ -32,30 +32,48 @@ import Atrat, {
   Up_Arrow,
 } from '../../assets/Images';
 import DatePicker from 'react-native-date-picker';
+import { PostApi } from '../../mocks/authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Register = ({navigation}) => {
-  const [selectedGender, setSelectedGender] = useState('');
+const Register = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [dateVisible, setdateVisible] = useState(false);
+  const [pShow, setPShow] = useState(false);
+  const [values, setValues] = useState({ birthday: new Date() });
+
+  const updateState = (key, value) => {
+    setValues(prevState => ({
+      ...prevState,
+      [key]: value
+    }));
+  };
 
   const handleSelectGender = gender => {
-    setSelectedGender(gender);
+    updateState('gender', gender);
     setModalVisible(false);
   };
-  const [pShow, setPShow] = useState(false);
+
   const handlePress = () => {
     Keyboard.dismiss();
-    // setModalVisible(true);
   };
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [dateVisible, setdateVisible] = useState(false);
 
-  const handleSelectDate = date => {
-    setSelectedDate(date);
-  };
   const Datepress = () => {
     Keyboard.dismiss();
     setdateVisible(true);
   };
+
+
+  const RegisterHandler = async () => {
+    try {
+      const user = await PostApi(values, 'sign-up');
+      await AsyncStorage.setItem('acessToken', user.token);
+      await AsyncStorage.setItem('userInfo', user.user);
+      navigation.navigate("BottomTabs")
+    } catch (error) {
+      console.log("Error--->", error)
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View
@@ -76,6 +94,7 @@ const Register = ({navigation}) => {
             <TextInput
               placeholder="jhon@gmail.com"
               placeholderTextColor={'#000'}
+              onChangeText={text => updateState('email', text)}
               style={styles.emailInput}
             />
           </View>
@@ -89,6 +108,7 @@ const Register = ({navigation}) => {
             <TextInput
               secureTextEntry={pShow ? false : true}
               placeholder="********"
+              onChangeText={text => updateState('password', text)}
               placeholderTextColor={'#000'}
               style={styles.emailInput}
             />
@@ -124,7 +144,7 @@ const Register = ({navigation}) => {
                 placeholder="Male"
                 placeholderTextColor={'#000'}
                 editable={false}
-                value={selectedGender}
+                value={values.gender}
                 pointerEvents="none"
                 style={styles.emailInput}
               />
@@ -149,7 +169,7 @@ const Register = ({navigation}) => {
                 placeholderTextColor={'#000'}
                 style={styles.emailInput}
                 placeholder="Select Date"
-                value={selectedDate.toDateString()}
+                value={values.birthday.toDateString()}
                 editable={false}
                 pointerEvents="none"
               />
@@ -161,17 +181,15 @@ const Register = ({navigation}) => {
               <Down_Arrow />
             </TouchableOpacity>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{
-            navigation.navigate("BottomTabs")
-          }} style={styles.LoginB}>
-          <LinearGradient
-            colors={['#FF00FF', '#00FFFF']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 1}}
-            style={styles.Gradient}>
-            <Text style={styles.ButtenT}>Register</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={RegisterHandler} style={styles.LoginB}>
+            <LinearGradient
+              colors={['#FF00FF', '#00FFFF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.Gradient}>
+              <Text style={styles.ButtenT}>Register</Text>
+            </LinearGradient>
+          </TouchableOpacity>
           {modalVisible && (
             <View style={styles.modalBackground}>
               <View style={styles.modalContainer}>
@@ -180,7 +198,7 @@ const Register = ({navigation}) => {
                   onPress={() => handleSelectGender('Male')}>
                   <Male />
                   <Text style={styles.optionText}>Male</Text>
-                  <View style={{width: 10}}></View>
+                  <View style={{ width: 10 }}></View>
                 </TouchableOpacity>
                 <View
                   style={{
@@ -195,7 +213,7 @@ const Register = ({navigation}) => {
                   onPress={() => handleSelectGender('Female')}>
                   <Female />
                   <Text style={styles.optionText}>Female</Text>
-                  <View style={{width: 10}}></View>
+                  <View style={{ width: 10 }}></View>
                 </TouchableOpacity>
               </View>
             </View>
@@ -204,8 +222,8 @@ const Register = ({navigation}) => {
             <View style={styles.modalBackground2}>
               <View style={styles.modalContainer2}>
                 <DatePicker
-                  date={selectedDate}
-                  onDateChange={handleSelectDate}
+                  date={values.birthday}
+                  onDateChange={(date) => updateState('birthday', date)}
                   mode="date"
                 />
                 <TouchableOpacity
@@ -217,13 +235,13 @@ const Register = ({navigation}) => {
             </View>
           </Modal>
 
-                </View>
+        </View>
         <View style={styles.Linet}>
           <Lines />
           <Text
             style={[
               styles.Text1,
-              {marginTop: 0, marginHorizontal: 0, fontFamily: 'Outfit-Regular'},
+              { marginTop: 0, marginHorizontal: 0, fontFamily: 'Outfit-Regular' },
             ]}>
             Continue With
           </Text>
@@ -295,7 +313,7 @@ const Register = ({navigation}) => {
   );
 };
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#120030',

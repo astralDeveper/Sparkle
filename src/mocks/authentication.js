@@ -8,7 +8,7 @@ export const PostApi = async (data, path) => {
         const response = await axios.post(`${BASE_URL}${path}`, data);
         return response.data;
     } catch (error) {
-        console.log("Error--->", error)
-        alert('Credentials Error');
+        console.log("Error--->", error.response.data.message)
+        alert(error.response.data.message);
     }
 };
