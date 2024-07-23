@@ -25,17 +25,31 @@ import Atrat, {
 } from '../../assets/Images';
 
 import { FacebookAuth, GoogleAuth } from '../../mocks/socialAuths';
-import {
-  AccessToken,
-  GraphRequest,
-  GraphRequestManager,
-  LoginManager,
-} from 'react-native-fbsdk';
-
+import { PostApi } from '../../mocks/authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
-
+  
   const [pShow, setPShow] = useState(false);
+  const [values, setValues] = useState({});
+
+  const updateState = (key, value) => {
+    setValues(prevState => ({
+      ...prevState,
+      [key]: value
+    }));
+  };
+
+  const LoginHandler = async () => {
+    try {
+      const user = await PostApi(values, 'login');
+      await AsyncStorage.setItem('acessToken', user.token);
+      await AsyncStorage.setItem('userInfo', user.user);
+      navigation.navigate("BottomTabs")
+    } catch (error) {
+      console.log("Error--->", error)
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -58,6 +72,7 @@ const Login = ({ navigation }) => {
               placeholder="jhon@gmail.com"
               placeholderTextColor={'#000'}
               style={styles.emailInput}
+              onChangeText={text => updateState('email', text)}
             />
           </View>
         </View>
@@ -72,6 +87,7 @@ const Login = ({ navigation }) => {
               placeholder="********"
               placeholderTextColor={'#000'}
               style={styles.emailInput}
+              onChangeText={text => updateState('password', text)}
             />
           </View>
           <TouchableOpacity
@@ -98,9 +114,7 @@ const Login = ({ navigation }) => {
             Forget Password?
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          navigation.navigate("BottomTabs")
-        }} style={styles.LoginB}>
+        <TouchableOpacity onPress={LoginHandler} style={styles.LoginB}>
           <LinearGradient
             colors={['#FF00FF', '#00FFFF']}
             start={{ x: 0, y: 0 }}
