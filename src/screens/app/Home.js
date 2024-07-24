@@ -22,7 +22,6 @@ const Home = ({navigation}) => {
   const loadStories = async () => {
     const data = await getStories();
     setStories(data?.story);
-    console.log('----->>', data?.story);
   };
   useEffect(() => {
     loadStories();
@@ -59,6 +58,7 @@ const Home = ({navigation}) => {
             <Text style={styles.popularText}>Popular</Text>
           </View>
           <TouchableOpacity
+          onPress={()=> navigation.navigate('MyStories')}
             style={{
               backgroundColor: '#F03197',
               padding: 10,
@@ -75,7 +75,6 @@ const Home = ({navigation}) => {
               //     navigation.navigate("Story_Added",{data:item.vide})
               // }}
               key={index}>
-              {console.log('item.media.path', item)}
               <View style={styles.profileContainer}>
                 <Image source={Videos[0].pic} style={styles.profileImage} />
                 <View>
@@ -89,7 +88,7 @@ const Home = ({navigation}) => {
                   ref={ref => {
                     videoRefs.current[index] = ref;
                   }}
-                  source={{uri: item.media.path}}
+                  source={{uri: item?.media?.path}}
                   resizeMode="stretch"
                   paused={playingIndex !== index}
                   style={styles.video}

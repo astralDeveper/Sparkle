@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,45 +8,46 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import {Image} from 'react-native';
+import { Image } from 'react-native';
 import Video from 'react-native-video';
-import {Crown, Left_Arrow, Play} from '../../assets/Images';
-import {Videos} from '../../Dummy';
-import {getStories} from '../../mocks/story';
+import { Crown, Left_Arrow, Play } from '../../assets/Images';
+import { Videos } from '../../Dummy';
+import { getOwnStories } from '../../mocks/story';
 
-const MyStories = ({navigation}) => {
-  const videoRefs = useRef([]);
+const MyStories = ({ navigation }) => {
+  const videoRefs = useRef();
   const [playingIndex, setPlayingIndex] = useState(null);
-  const [stories, setStories] = useState(getStories);
+  const [stories, setStories] = useState();
 
   const loadStories = async () => {
-    const data = await getStories();
-    setStories(data?.story);
-    console.log('----->>', data?.story);
+    try {
+      const data = await getOwnStories();
+      setStories(data)
+    } catch (error) {
+      console.log(error)
+    }
   };
   useEffect(() => {
     loadStories();
   }, []);
-
   const handleVideoPress = index => {
     setPlayingIndex(playingIndex === index ? null : index);
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <View style={styles.header}>
           <TouchableOpacity
-            // onPress={() => {
-            //   navigation.pop();
-            // }}
-            // style={styles.backButton}
+            onPress={() => {
+              navigation.pop();
+            }}
             style={{
               width: 30,
             }}>
-            {/* // <Left_Arrow /> */}
+            <Left_Arrow />
           </TouchableOpacity>
-          <Text style={styles.feedText}>Feed</Text>
-          <View style={{width: 20}}></View>
+          <Text style={styles.feedText}>My Stories</Text>
+          <View style={{ width: 20 }}></View>
         </View>
         <View
           style={{
@@ -58,44 +59,33 @@ const MyStories = ({navigation}) => {
           <View style={styles.popularContainer}>
             <Text style={styles.popularText}>Popular</Text>
           </View>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#F03197',
-              padding: 10,
-              borderRadius: 10,
-            }}>
-            <Text>My Story</Text>
-          </TouchableOpacity>
         </View>
         <FlatList
           data={stories}
-          renderItem={({item, index}) => (
-            <TouchableOpacity
-              // onPress={()=>{
-              //     navigation.navigate("Story_Added",{data:item.vide})
-              // }}
-              key={index}>
-              {console.log('item.media.path', item)}
+          renderItem={({ item, index }) => (
+            <View key={index}>
               <View style={styles.profileContainer}>
-                <Image source={Videos[0].pic} style={styles.profileImage} />
                 <View>
-                  <Text style={styles.profileName}>{item.name}</Text>
-                  <Text style={styles.profileTime}>{item.caption}</Text>
+                  <Image source={Videos[0].pic} style={styles.profileImage} />
+                  <View>
+                    <Text style={styles.profileName}>{item.name}</Text>
+                    <Text style={styles.profileTime}>{item.caption}</Text>
+                  </View>
+                  <Crown />
                 </View>
-                <Crown />
               </View>
               <TouchableOpacity onPress={() => handleVideoPress(index)}>
                 <Video
                   ref={ref => {
                     videoRefs.current[index] = ref;
                   }}
-                  source={{uri: item.media.path}}
+                  source={{ uri: item.media.path }}
                   resizeMode="stretch"
                   paused={playingIndex !== index}
                   style={styles.video}
                 />
               </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -104,7 +94,7 @@ const MyStories = ({navigation}) => {
   );
 };
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
