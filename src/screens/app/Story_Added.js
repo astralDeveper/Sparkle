@@ -28,7 +28,10 @@ const Story_Added = ({ navigation, route }) => {
   };
 
   const putStory = async () => {
-    if (caption.length > 0 && filePath) await addStory({ file: filePath, caption })
+    if (caption.length > 0 && filePath) {
+      await addStory({ file: filePath, caption })
+      navigation.goBack()
+    }
   }
 
   return (

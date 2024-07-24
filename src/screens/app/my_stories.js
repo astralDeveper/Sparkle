@@ -14,7 +14,7 @@ import {Crown, Left_Arrow, Play} from '../../assets/Images';
 import {Videos} from '../../Dummy';
 import {getStories} from '../../mocks/story';
 
-const Home = ({navigation}) => {
+const MyStories = ({navigation}) => {
   const videoRefs = useRef([]);
   const [playingIndex, setPlayingIndex] = useState(null);
   const [stories, setStories] = useState(getStories);
@@ -168,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default MyStories;

@@ -21,6 +21,7 @@ export const addStory = async (data) => {
                 }
             }
         );
+        console.log("first---->",res.data)
         return res.data; // Corrected from res.date to res.data
     } catch (error) {
         console.log("Error--->", error)
@@ -32,7 +33,7 @@ export const getStories = async () => {
         const acessToken = await AsyncStorage.getItem('acessToken');
         const token = JSON.parse(acessToken);
 
-        const res = await axios.get(BASE_URL + 'get-stories',
+        const res = await axios.get(BASE_URL + 'get-story',
             {
                 headers: {
                     'Authorization': token,
