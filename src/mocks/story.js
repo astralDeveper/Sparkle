@@ -21,7 +21,9 @@ export const addStory = async (data) => {
                 }
             }
         );
-        return res.data; // Corrected from res.date to res.data
+        console.log(res?.data)
+        alert("Story Added Successfully")
+        return res?.data; // Corrected from res.date to res.data
     } catch (error) {
         console.log("Error--->", error)
         console.log("Error--->", error.response.data.message)
@@ -32,13 +34,32 @@ export const getStories = async () => {
         const acessToken = await AsyncStorage.getItem('acessToken');
         const token = JSON.parse(acessToken);
 
-        const res = await axios.get(BASE_URL + 'get-stories',
+        const res = await axios.get(BASE_URL + 'stories',
             {
                 headers: {
                     'Authorization': token,
                 }
             });
 
+        return res.data; // Corrected from res.date to res.data
+    } catch (error) {
+        console.log("Error--->", error)
+        console.log("Error--->", error.response.data)
+    }
+}
+
+export const getOwnStories = async () => {
+    try {
+        const acessToken = await AsyncStorage.getItem('acessToken');
+        const token = JSON.parse(acessToken);
+
+        const res = await axios.get(BASE_URL + 'get-stories',
+            {
+                headers: {
+                    'Authorization': token,
+                }
+            });
+            console.log("res",res?.data)
         return res.data; // Corrected from res.date to res.data
     } catch (error) {
         console.log("Error--->", error)

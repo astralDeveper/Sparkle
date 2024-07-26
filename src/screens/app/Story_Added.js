@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -9,16 +9,16 @@ import {
   FlatList,
   TextInput,
 } from 'react-native';
-import { Image } from 'react-native';
+import {Image} from 'react-native';
 import Video from 'react-native-video';
-import { Crown, Em, Left_Arrow, Play, Send } from '../../assets/Images';
-import { Videos } from '../../Dummy';
+import {Crown, Em, Left_Arrow, Play, Send} from '../../assets/Images';
+import {Videos} from '../../Dummy';
 import LinearGradient from 'react-native-linear-gradient';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { chooseFile } from '../../mocks/global';
-import { addStory } from '../../mocks/story';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {chooseFile} from '../../mocks/global';
+import {addStory} from '../../mocks/story';
 
-const Story_Added = ({ navigation, route }) => {
+const Story_Added = ({navigation, route}) => {
   const [playingIndex, setPlayingIndex] = useState(null);
   const [filePath, setFilePath] = useState(null);
   const [caption, setCaption] = useState('');
@@ -28,12 +28,13 @@ const Story_Added = ({ navigation, route }) => {
   };
 
   const putStory = async () => {
-    if (caption.length > 0 && filePath) await addStory({ file: filePath, caption })
-  }
+    if (caption.length > 0 && filePath)
+      await addStory({file: filePath, caption});
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: 1 }}>
+      <View style={{flex: 1}}>
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => {
@@ -43,7 +44,7 @@ const Story_Added = ({ navigation, route }) => {
             <Left_Arrow />
           </TouchableOpacity>
           <Text style={styles.feedText}>Add Story</Text>
-          <View style={{ width: 20 }}></View>
+          <View style={{width: 20}}></View>
         </View>
         <View
           style={{
@@ -54,7 +55,7 @@ const Story_Added = ({ navigation, route }) => {
           <TouchableOpacity onPress={() => handleVideoPress()}>
             {filePath ? (
               <Video
-                source={{ uri: filePath.uri }}
+                source={{uri: filePath.uri}}
                 resizeMode="stretch"
                 paused={playingIndex}
                 style={styles.media}
@@ -79,24 +80,22 @@ const Story_Added = ({ navigation, route }) => {
             <TouchableOpacity onPress={() => chooseFile(setFilePath)}>
               <LinearGradient
                 colors={['#E00A9E', '#8727F3']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
                 style={{
                   padding: 10,
                   alignItems: 'center',
                   borderRadius: 10,
                   width: width * 0.25,
                 }}>
-                <Text style={{ color: '#FFF', fontSize: 18 }}>
-                  Gallery
-                </Text>
+                <Text style={{color: '#FFF', fontSize: 18}}>Gallery</Text>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonContainer}>
               <LinearGradient
                 colors={['#ff00ff', '#00ffff']} // Replace with your gradient colors
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
                 style={styles.gradientBorder}>
                 <View style={styles.button}>
                   <Text style={styles.buttonText}>Camera</Text>
@@ -127,8 +126,7 @@ const Story_Added = ({ navigation, route }) => {
               }}
               onChangeText={text => setCaption(text)}
             />
-            <TouchableOpacity
-              onPress={putStory}>
+            <TouchableOpacity onPress={putStory}>
               <Send />
             </TouchableOpacity>
           </View>
@@ -138,7 +136,7 @@ const Story_Added = ({ navigation, route }) => {
   );
 };
 
-const { width, height } = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,

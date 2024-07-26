@@ -6,7 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
 } from 'react-native';
 import { Image } from 'react-native';
 import Video from 'react-native-video';
@@ -17,19 +17,21 @@ import { getStories } from '../../mocks/story';
 const Home = ({ navigation }) => {
   const videoRefs = useRef([]);
   const [playingIndex, setPlayingIndex] = useState(null);
-  const [stories, setStories] = useState(getStories);
+  const [stories, setStories] = useState([]);
 
   const loadStories = async () => {
     const data = await getStories();
-    setStories(data.stories);
+    setStories(data?.stories || []);
   };
+
   useEffect(() => {
     loadStories();
-  }, []);
+  }, [stories]);
 
   const handleVideoPress = (index) => {
     setPlayingIndex(playingIndex === index ? null : index);
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1 }}>
@@ -43,23 +45,35 @@ const Home = ({ navigation }) => {
               width: 30
             }}
           >
-            {/* // <Left_Arrow /> */}
+            {/* <Left_Arrow /> */}
           </TouchableOpacity>
           <Text style={styles.feedText}>Feed</Text>
           <View style={{ width: 20 }}></View>
         </View>
-        <View style={styles.popularContainer}>
-          <Text style={styles.popularText}>Popular</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            margin: 20,
+          }}>
+          <View style={styles.popularContainer}>
+            <Text style={styles.popularText}>Popular</Text>
+          </View>
+          <TouchableOpacity
+          onPress={()=> navigation.navigate('MyStories')}
+            style={{
+              backgroundColor: '#F03197',
+              padding: 10,
+              borderRadius: 10,
+            }}>
+            <Text>My Story</Text>
+          </TouchableOpacity>
         </View>
-        <FlatList
-          data={stories}
-          renderItem={({ item, index }) => (
-            <TouchableOpacity
-              // onPress={()=>{
-              //     navigation.navigate("Story_Added",{data:item.vide})
-              // }}
-              key={index}>
-                {console.log('item.media.path',item)}
+        <ScrollView>
+          {stories.map((item, index) => (
+            <TouchableOpacity key={index}>
+              {/* {console.log('item.media.path', item)} */}
               <View style={styles.profileContainer}>
                 <Image
                   source={Videos[0].pic}
@@ -71,23 +85,20 @@ const Home = ({ navigation }) => {
                 </View>
                 <Crown />
               </View>
-              <TouchableOpacity
-                onPress={() => handleVideoPress(index)}>
+              <TouchableOpacity onPress={() => handleVideoPress(index)}>
                 <Video
                   ref={(ref) => {
                     videoRefs.current[index] = ref;
                   }}
-                  source={{uri : item.media.path}}
+                  source={{ uri: item.media.path }}
                   resizeMode='stretch'
                   paused={playingIndex !== index}
                   style={styles.video}
                 />
-
               </TouchableOpacity>
             </TouchableOpacity>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
+          ))}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

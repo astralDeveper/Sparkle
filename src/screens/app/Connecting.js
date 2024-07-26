@@ -116,6 +116,7 @@ const Connecting = ({navigation, route}) => {
               onPress={() =>
                 navigation.navigate(
                   Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
+               
                 )
               }
               style={{
@@ -137,11 +138,11 @@ const Connecting = ({navigation, route}) => {
 
           {get1 && (
             <TouchableOpacity
-            onPress={() =>
-              navigation.navigate(
-                Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
-              )
-            }
+              onPress={() =>
+                navigation.navigate(
+                  Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
+                )
+              }
               style={{
                 position: 'absolute',
                 bottom: height * 0.2,

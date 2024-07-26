@@ -24,6 +24,7 @@ import Premium from '../screens/app/Premium'
 import Deposit from '../screens/app/Deposit'
 import Congraj from '../screens/app/Congraj'
 import FogetP from '../screens/app/FogetP'
+import MyStories from '../screens/app/My-Stories'
 
 const Routes = ({initialRouteName}) => {
 
@@ -139,6 +140,11 @@ const Stack=createNativeStackNavigator()
         <Stack.Screen
         name='FogetP'
         component={FogetP}
+        options={{headerShown:false}}
+        />
+        <Stack.Screen
+        name='MyStories'
+        component={MyStories}
         options={{headerShown:false}}
         />
     </Stack.Navigator>
