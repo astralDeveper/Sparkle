@@ -12,7 +12,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Add_Fri,
   Close,
@@ -25,10 +25,69 @@ import {
 import {Explore, Gifts, TopUsers} from '../../Dummy';
 import LinearGradient from 'react-native-linear-gradient';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {USER} from '../Api';
+import DeviceInfo from 'react-native-device-info';
 
 const Dashboard = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const refRBSheet = useRef();
+  const [userInfo, setuserInfo] = useState();
+  const [allGifts, setallGifts] = useState();
+
+  useEffect(() => {
+    const getdata = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('acessToken');
+        const token = JSON.parse(accessToken);
+        // console.log('Your Token =====>', token);
+        if (accessToken !== null) {
+          const res = await axios.get(USER.PROFILE_DETAILS, {
+            headers: {Authorization: token},
+          });
+          // console.log('Your Token =====>', userInfo.user);
+          setuserInfo(res?.data);
+        } else {
+          console.log('No access token found');
+        }
+      } catch (error) {
+        console.error('Error fetching profile details:', error.message);
+      }
+    };
+
+    getdata();
+  }, []);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await axios.get(USER.GET_ALL_GIFTS);
+        const gifts = res?.data?.gift;
+
+        setallGifts(gifts);
+        await AsyncStorage.setItem('AllGifts', JSON.stringify(gifts));
+      } catch (error) {
+        console.error('Error fetching profile details:', error.message);
+      }
+    };
+
+    getData();
+  }, []);
+
+  const fetchIpAddress = async () => {
+    try {
+      const ip = await DeviceInfo.getIpAddress();
+      const id = await DeviceInfo.getUniqueId();
+      console.log(ip, 'ip', id);
+      // const fcm = await getFCMToken()
+      // console.log(fcm, 'fcm')
+    } catch (error) {
+      console.error('Error fetching IP address:', error);
+    }
+  };
+  useEffect(() => {
+    fetchIpAddress();
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -75,7 +134,7 @@ const Dashboard = ({navigation}) => {
                   fontFamily: 'Outfit-Bold',
                   width: width * 0.15,
                 }}>
-                30.5k
+                {userInfo?.user?.diamond}
               </Text>
             </View>
             <View
@@ -92,7 +151,7 @@ const Dashboard = ({navigation}) => {
                   fontFamily: 'Outfit-Bold',
                   width: width * 0.15,
                 }}>
-                30.5k
+                {userInfo?.user?.rCoin}
               </Text>
             </View>
             <View>
@@ -312,7 +371,9 @@ const Dashboard = ({navigation}) => {
                       fontSize: 20,
                       marginTop: 10,
                     }}>
-                    William H.
+                    {userInfo?.user?.name == ''
+                      ? 'William H.'
+                      : userInfo?.user?.name}
                   </Text>
                 </View>
                 <View>
@@ -325,7 +386,7 @@ const Dashboard = ({navigation}) => {
                         fontFamily: 'Outfit-Regular',
                         marginLeft: 10,
                       }}>
-                      35.9k
+                      {userInfo?.user?.rCoin}
                     </Text>
                   </View>
                   <View
@@ -344,7 +405,7 @@ const Dashboard = ({navigation}) => {
                         fontFamily: 'Outfit-Regular',
                         marginLeft: 10,
                       }}>
-                      35.9k
+                      {userInfo?.user?.diamond}
                     </Text>
                   </View>
                 </View>
@@ -372,11 +433,12 @@ const Dashboard = ({navigation}) => {
                       />
                     </TouchableOpacity>
                     <View style={{height: 20}}></View>
-                    <TouchableOpacity onPress={()=>{
-                      navigation.navigate("Messege")
-                      setModalVisible(false)
-                    }}>
-                    <Add_Fri />
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('Messege');
+                        setModalVisible(false);
+                      }}>
+                      <Add_Fri />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -395,7 +457,9 @@ const Dashboard = ({navigation}) => {
                   alignSelf: 'center',
                   marginBottom: 20,
                 }}>
-                I am a dancer for last 4 years
+                {userInfo?.user?.tagline == ''
+                  ? 'I am a dancer for last 4 years'
+                  : userInfo?.user?.tagline}
               </Text>
             </View>
             <View

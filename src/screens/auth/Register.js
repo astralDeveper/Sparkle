@@ -10,7 +10,7 @@ import {
   Modal,
   Keyboard,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import RNBootSplash from 'react-native-bootsplash';
 
 // Images
@@ -32,19 +32,19 @@ import Atrat, {
   Up_Arrow,
 } from '../../assets/Images';
 import DatePicker from 'react-native-date-picker';
-import { PostApi } from '../../mocks/authentication';
+import {PostApi} from '../../mocks/authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Register = ({ navigation }) => {
+const Register = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [dateVisible, setdateVisible] = useState(false);
   const [pShow, setPShow] = useState(false);
-  const [values, setValues] = useState({ birthday: new Date() });
+  const [values, setValues] = useState({birthday: new Date()});
 
   const updateState = (key, value) => {
     setValues(prevState => ({
       ...prevState,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -61,18 +61,17 @@ const Register = ({ navigation }) => {
     Keyboard.dismiss();
     setdateVisible(true);
   };
-
-
   const RegisterHandler = async () => {
     try {
-      const user = await PostApi(values, 'sign-up');
-      await AsyncStorage.setItem('acessToken', user.token);
-      await AsyncStorage.setItem('userInfo', user.user);
-      navigation.navigate("BottomTabs")
+      const user = await PostApi(values, 'signup');
+      await AsyncStorage.setItem('acessToken', JSON.stringify(user.token));
+      await AsyncStorage.setItem('userInfo', JSON.stringify(user.user));
+
+      navigation.navigate('BottomTabs');
     } catch (error) {
-      console.log("Error--->", error)
+      console.log('Error--->', error);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -93,7 +92,7 @@ const Register = ({ navigation }) => {
             <Text style={styles.inputtitle}>Email Address</Text>
             <TextInput
               placeholder="jhon@gmail.com"
-              placeholderTextColor={'#000'}
+              placeholderTextColor={'#8e8e8e'}
               onChangeText={text => updateState('email', text)}
               style={styles.emailInput}
             />
@@ -109,7 +108,7 @@ const Register = ({ navigation }) => {
               secureTextEntry={pShow ? false : true}
               placeholder="********"
               onChangeText={text => updateState('password', text)}
-              placeholderTextColor={'#000'}
+              placeholderTextColor={'#8e8e8e'}
               style={styles.emailInput}
             />
           </View>
@@ -141,8 +140,8 @@ const Register = ({ navigation }) => {
             <View style={[styles.inputPC]}>
               <Text style={styles.inputtitle}>Gender</Text>
               <TextInput
-                placeholder="Male"
-                placeholderTextColor={'#000'}
+                placeholder="male"
+                placeholderTextColor={'#8e8e8e'}
                 editable={false}
                 value={values.gender}
                 pointerEvents="none"
@@ -166,7 +165,7 @@ const Register = ({ navigation }) => {
             <View style={styles.inputPC}>
               <Text style={styles.inputtitle}>Birthday</Text>
               <TextInput
-                placeholderTextColor={'#000'}
+                placeholderTextColor={'#8e8e8e'}
                 style={styles.emailInput}
                 placeholder="Select Date"
                 value={values.birthday.toDateString()}
@@ -184,8 +183,8 @@ const Register = ({ navigation }) => {
           <TouchableOpacity onPress={RegisterHandler} style={styles.LoginB}>
             <LinearGradient
               colors={['#FF00FF', '#00FFFF']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
               style={styles.Gradient}>
               <Text style={styles.ButtenT}>Register</Text>
             </LinearGradient>
@@ -195,10 +194,10 @@ const Register = ({ navigation }) => {
               <View style={styles.modalContainer}>
                 <TouchableOpacity
                   style={styles.option}
-                  onPress={() => handleSelectGender('Male')}>
+                  onPress={() => handleSelectGender('male')}>
                   <Male />
                   <Text style={styles.optionText}>Male</Text>
-                  <View style={{ width: 10 }}></View>
+                  <View style={{width: 10}}></View>
                 </TouchableOpacity>
                 <View
                   style={{
@@ -210,10 +209,10 @@ const Register = ({ navigation }) => {
                   }}></View>
                 <TouchableOpacity
                   style={styles.option}
-                  onPress={() => handleSelectGender('Female')}>
+                  onPress={() => handleSelectGender('female')}>
                   <Female />
                   <Text style={styles.optionText}>Female</Text>
-                  <View style={{ width: 10 }}></View>
+                  <View style={{width: 10}}></View>
                 </TouchableOpacity>
               </View>
             </View>
@@ -223,8 +222,12 @@ const Register = ({ navigation }) => {
               <View style={styles.modalContainer2}>
                 <DatePicker
                   date={values.birthday}
-                  onDateChange={(date) => updateState('birthday', date)}
+                  onDateChange={date => updateState('birthday', date)}
                   mode="date"
+                  style={{
+                    color: '#000',
+                    backgroundColor: '#000',
+                  }}
                 />
                 <TouchableOpacity
                   style={styles.option2}
@@ -234,14 +237,13 @@ const Register = ({ navigation }) => {
               </View>
             </View>
           </Modal>
-
         </View>
         <View style={styles.Linet}>
           <Lines />
           <Text
             style={[
               styles.Text1,
-              { marginTop: 0, marginHorizontal: 0, fontFamily: 'Outfit-Regular' },
+              {marginTop: 0, marginHorizontal: 0, fontFamily: 'Outfit-Regular'},
             ]}>
             Continue With
           </Text>
@@ -313,7 +315,7 @@ const Register = ({ navigation }) => {
   );
 };
 
-const { height, width } = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#120030',
@@ -445,13 +447,16 @@ const styles = StyleSheet.create({
   },
   modalContainer2: {
     width: 300,
-    backgroundColor: 'white',
+    backgroundColor: '#000',
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
   },
   option2: {
-    paddingVertical: 10,
+    padding: 10,
+    borderWidth: 2,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
   },
   optionText2: {
     fontSize: 18,

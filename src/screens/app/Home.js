@@ -17,16 +17,16 @@ import { getStories } from '../../mocks/story';
 const Home = ({ navigation }) => {
   const videoRefs = useRef([]);
   const [playingIndex, setPlayingIndex] = useState(null);
-  const [stories, setStories] = useState([]);
+  // const [stories, setStories] = useState([]);
 
-  const loadStories = async () => {
-    const data = await getStories();
-    setStories(data?.stories || []);
-  };
+  // const loadStories = async () => {
+  //   const data = await getStories();
+  //   setStories(data?.stories || []);
+  // };
 
-  useEffect(() => {
-    loadStories();
-  }, [stories]);
+  // useEffect(() => {
+  //   loadStories();
+  // }, [stories]);
 
   const handleVideoPress = (index) => {
     setPlayingIndex(playingIndex === index ? null : index);
@@ -70,10 +70,10 @@ const Home = ({ navigation }) => {
             <Text>My Story</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView>
+        {/* <ScrollView>
           {stories.map((item, index) => (
             <TouchableOpacity key={index}>
-              {/* {console.log('item.media.path', item)} */}
+ 
               <View style={styles.profileContainer}>
                 <Image
                   source={Videos[0].pic}
@@ -98,7 +98,7 @@ const Home = ({ navigation }) => {
               </TouchableOpacity>
             </TouchableOpacity>
           ))}
-        </ScrollView>
+        </ScrollView> */}
       </View>
     </SafeAreaView>
   );

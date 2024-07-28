@@ -487,6 +487,10 @@
 
 // const {height, width} = Dimensions.get('screen');
 // export default Video_Call;
+
+
+
+
 import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
@@ -531,11 +535,13 @@ const Video_Call = ({navigation}) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [start, setStart] = useState(false);
+  const [videoAllowed, setVideoAllowed] = useState(false); // New state
 
   const pc = useRef(new RTCPeerConnection(configuration));
   const socket = useRef(null);
   const refRBSheet = useRef();
 
+  const scrollViewRef = useRef(null);
   useEffect(() => {
     const initializeWebRTC = async () => {
       try {
@@ -545,6 +551,17 @@ const Video_Call = ({navigation}) => {
 
         socket.current.on('connect', () => {
           console.log('Socket connected');
+          socket.current.emit('join-video'); // Request to join the video
+        });
+
+        socket.current.on('video-accepted', () => {
+          console.log('Video accepted');
+          setVideoAllowed(true);
+        });
+
+        socket.current.on('video-rejected', () => {
+          console.log('Video rejected');
+          setVideoAllowed(false);
         });
 
         socket.current.on('offer', async offer => {
@@ -628,6 +645,7 @@ const Video_Call = ({navigation}) => {
       const stream = await mediaDevices.getUserMedia({
         video: true,
         audio: true,
+       displaySurface: 'application'
       });
       setLocalStream(stream);
       stream.getTracks().forEach(track => pc.current.addTrack(track, stream));
@@ -637,17 +655,21 @@ const Video_Call = ({navigation}) => {
   };
 
   const startCall = async () => {
-    if (socket.current) {
-      try {
-        const offer = await pc.current.createOffer();
-        await pc.current.setLocalDescription(offer);
-        socket.current.emit('offer', offer);
-        setConnectionStatus('Calling');
-      } catch (error) {
-        console.error('Error starting call:', error);
+    if (videoAllowed) { // Check if the user is allowed to start a call
+      if (socket.current) {
+        try {
+          const offer = await pc.current.createOffer();
+          await pc.current.setLocalDescription(offer);
+          socket.current.emit('offer', offer);
+          setConnectionStatus('Calling');
+        } catch (error) {
+          console.error('Error starting call:', error);
+        }
+      } else {
+        console.error('Socket not connected');
       }
     } else {
-      console.error('Socket not connected');
+      console.log('Video not allowed for this user');
     }
   };
 
@@ -662,32 +684,28 @@ const Video_Call = ({navigation}) => {
       socket.current.disconnect();
     }
     setConnectionStatus('Disconnected');
-    navigation.goBack();
+    navigation.navigate("Home");
   };
 
   const sendMessage = () => {
     if (message.trim()) {
-      const chatMessage = {text: message, timestamp: new Date()};
+      const chatMessage = {text: message};
       socket.current.emit('chat-message', chatMessage);
       setMessage('');
       console.log('Sent chat message:', chatMessage);
     }
   };
 
-  const formatTimestamp = timestamp => {
-    try {
-      const date = new Date(timestamp);
-      return date.toLocaleTimeString();
-    } catch (error) {
-      console.error('Error formatting timestamp:', error);
-      return '';
+  useEffect(() => {
+    if (scrollViewRef.current && messages) {
+      scrollViewRef.current.scrollToEnd({ animated: false });
     }
-  };
+  }, [message]);
 
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 1, width: '100%'}}>
-        {start && remoteStream && (
+        {start && videoAllowed && remoteStream && (
           <RTCView
             streamURL={remoteStream.toURL()}
             style={{flex: 1, width: '100%', height: '100%'}}
@@ -700,8 +718,8 @@ const Video_Call = ({navigation}) => {
           />
         )}
       </View>
-      <View style={{position: 'absolute', height: '92%', width: '100%'}}>
-        <View style={{flex: 1}}>
+      <View style={{position: 'absolute', height: height * 0.9, width: '100%'}}>
+        <View style={{flex: 1,}}>
           <View
             style={{
               flexDirection: 'row',
@@ -727,7 +745,7 @@ const Video_Call = ({navigation}) => {
                   padding: 5,
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  width: '25%',
+                  width: width * 0.3,
                   borderRadius: 10,
                 }}>
                 <Coin />
@@ -751,7 +769,7 @@ const Video_Call = ({navigation}) => {
                   style={{
                     backgroundColor: 'red',
                     padding: 5,
-                    width: '20%',
+                    width: width * 0.2,
                     borderRadius: 50,
                     alignItems: 'center',
                   }}>
@@ -773,7 +791,7 @@ const Video_Call = ({navigation}) => {
                   style={{
                     backgroundColor: 'blue',
                     padding: 5,
-                    width: '20%',
+                    width: width * 0.2,
                     borderRadius: 50,
                     alignItems: 'center',
                   }}>
@@ -793,12 +811,12 @@ const Video_Call = ({navigation}) => {
             <Parti />
           </TouchableOpacity>
           <View style={{position: 'absolute', bottom: '10%', height: '20%'}}>
-            <ScrollView>
+            <ScrollView ref={scrollViewRef}>
               <FlatList
                 data={messages}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({item}) => (
-                  <View style={{width: '80%'}}>
+                  <View style={{width: width * 0.8}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -806,6 +824,7 @@ const Video_Call = ({navigation}) => {
                         justifyContent: 'space-evenly',
                         marginVertical: 5,
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        paddingHorizontal: 15,
                         padding: 5,
                         borderRadius: 20,
                         marginLeft: 10,
@@ -815,8 +834,8 @@ const Video_Call = ({navigation}) => {
                         style={{
                           alignSelf: 'center',
                           justifyContent: 'center',
-                          marginLeft: 10,
-                          maxWidth: '30%',
+                          // marginLeft: 10,
+                          // maxWidth: '3,
                         }}>
                         <Text style={{color: '#FFF', textAlign: 'center'}}>
                           {item.text}
@@ -828,51 +847,52 @@ const Video_Call = ({navigation}) => {
               />
             </ScrollView>
           </View>
+
+        </View>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 5,
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            width: width * 0.9,
+            alignSelf: 'center',
+          }}>
           <View
             style={{
-              position: 'absolute',
-              bottom: 20,
-              alignItems: 'center',
+              width: '80%',
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              borderRadius: 100,
               flexDirection: 'row',
-              justifyContent: 'space-around',
-              width: '95%',
-              alignSelf: 'center',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: 5,
             }}>
-            <View
-              style={{
-                width: '80%',
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                borderRadius: 100,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 5,
-              }}>
-              <Em />
-              <TextInput
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Type a message"
-                placeholderTextColor={'#8e8e8e'}
-                style={{padding: 0, width: '55%', height: 40, color: '#FFF'}}
-              />
-              <TouchableOpacity onPress={sendMessage}>
-                <Send />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              onPress={() => refRBSheet.current.open()}
-              style={{
-                height: 40,
-                width: 40,
-                backgroundColor: '#FFF',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 100,
-              }}>
-              <Orange_Gift />
+            <Em />
+            <TextInput
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Type a message"
+              placeholderTextColor={'#8e8e8e'}
+              style={{padding: 0, width: '55%', height: 40, color: '#FFF'}}
+            />
+            <TouchableOpacity onPress={sendMessage}>
+              <Send />
             </TouchableOpacity>
           </View>
+          <TouchableOpacity
+            onPress={() => refRBSheet.current.open()}
+            style={{
+              height: 40,
+              width: 40,
+              backgroundColor: '#FFF',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 100,
+            }}>
+            <Orange_Gift />
+          </TouchableOpacity>
         </View>
         <RBSheet
           ref={refRBSheet}

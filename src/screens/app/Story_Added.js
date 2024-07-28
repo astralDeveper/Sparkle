@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -17,19 +17,63 @@ import LinearGradient from 'react-native-linear-gradient';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {chooseFile} from '../../mocks/global';
 import {addStory} from '../../mocks/story';
+import axios from 'axios';
+import {USER} from '../Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Story_Added = ({navigation, route}) => {
   const [playingIndex, setPlayingIndex] = useState(null);
   const [filePath, setFilePath] = useState(null);
   const [caption, setCaption] = useState('');
+  const [userToken, setUserToken] = useState();
 
   const handleVideoPress = () => {
     setPlayingIndex(!playingIndex);
   };
 
-  const putStory = async () => {
-    if (caption.length > 0 && filePath)
-      await addStory({file: filePath, caption});
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('userInfo');
+
+        const data = JSON.parse(accessToken);
+        setUserToken(data);
+      } catch (error) {
+        console.error('Error fetching data from AsyncStorage', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const putStory = async e => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('title', 'title');
+    formData.append('caption', caption);
+    formData.append('media', filePath);
+
+    // Add your user authentication details here
+    const auth = {
+      _id: userToken?._id, // replace with actual user ID
+    };
+    formData.append('auth', JSON.stringify(auth));
+
+    try {
+      const response = await axios.post(USER.ADD_STORY, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.status) {
+        alert('Story added successfully.');
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
   };
 
   return (

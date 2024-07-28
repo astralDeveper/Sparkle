@@ -8,446 +8,296 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  Image,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   BIg_Coin,
-  Crown,
   Crown1,
-  Dots,
-  Edit,
-  Help,
-  Log,
-  Prof,
   Redright,
   Sett,
   Whiteleft,
   Whiteright,
+  Help,
+  Log,
+  Prof,
+  Edit,
 } from '../../assets/Images';
-import { Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { launchImageLibrary } from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {BASE_URL} from '../../mocks/authentication';
+import {USER} from '../Api';
 
-const Profile = ({ navigation }) => {
+const {height, width} = Dimensions.get('window');
+
+const Profile = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [filePath, setFilePath] = useState(null);
+  const [userName, setUserName] = useState('');
+  const [userTagline, setUserTagline] = useState('');
+  const [userData, setUserData] = useState();
+  const [formData, setFormData] = useState({
+    userId: 'USER_ID',  // Replace with the actual user ID
+    name: '',
+    username: '',
+    bio: '',
+    gender: '',
+    age: '',
+    tagline: '',
+    image: null,
+  });
+  const [loading, setLoading] = useState(false);
 
-  const chooseFile = () => {
-    let options = {
-      mediaType: 'photo', // 'photo', 'video', or 'mixed'
-      maxWidth: 300,
-      maxHeight: 550,
-      quality: 1,
-    };
+  const handleInputChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  // const  = () => {
+  //   let options = {
+  //     mediaType: 'photo',
+  //     maxWidth: 300,
+  //     maxHeight: 550,
+  //     quality: 1,
+  //   };
 
-    launchImageLibrary(options, (response) => {
-      console.log('Response = ', response);
+  //   launchImageLibrary(options, response => {
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker',response);
+  //     } else if (response.errorCode) {
+  //       console.log('ImagePicker Error: ', response.errorMessage);
+  //     } else {
+       
+  //       setFilePath(response);
+  //     }
+  //   });
+  // };
+  // console.log("IDIDIDID",userData?._id)
 
+  const chooseFile  = (field) => {
+    launchImageLibrary({}, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
-      } else if (response.errorCode) {
+      } else if (response.errorMessage) {
         console.log('ImagePicker Error: ', response.errorMessage);
-      } else {
-        const source = { uri: response.assets[0].uri };
+      } else if (response.assets && response.assets.length > 0) {
+        const selectedImage = response.assets[0];
+        const source = {
+          uri: selectedImage.uri,
+          type: selectedImage.type,
+          name: selectedImage.fileName
+        };
         setFilePath(source);
+       
       }
     });
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('userInfo');
 
+        const data = JSON.parse(accessToken);
+        setUserData(data);
+      } catch (error) {
+        console.error('Error fetching data from AsyncStorage', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+  const onUpdate = async profileData => {
+    try {
+      const formData = new FormData();
+
+      // Append the form fields
+      formData.append('userId', userData?._id);
+      formData.append('name', userName);
+      formData.append('username', userName);
+      formData.append('bio', 'bio');
+      formData.append('gender', 'male');
+      formData.append('age', '12');
+      formData.append('tagline', userTagline);
+
+      // Append the files if they exist
+      if (filePath) {
+        formData.append('files', filePath);
+      }
+
+      const response = await axios.put(USER.UPDATE_PROFILE,{userId:userData?._id}, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.status) {
+        console.log('Profile updated successfully:', response.data.user);
+        // Handle success (e.g., update state, show success message)
+      } else {
+        console.log('Failed to update profile:', response.data.message);
+        // Handle failure (e.g., show error message)
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error.message);
+      // Handle server error
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View
-          style={{
-            flex: 1,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              margin: 20,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <View style={styles.headerTitle}>
               <Prof />
-              <Text
-                style={{
-                  color: '#FFF',
-                  fontSize: 30,
-                  fontFamily: 'Outfit-Regular',
-                  marginLeft: 20,
-                }}>
-                Profile
-              </Text>
+              <Text style={styles.headerText}>Profile</Text>
             </View>
-            <TouchableOpacity>
-              {/* <Dots /> */}
-            </TouchableOpacity>
+            <TouchableOpacity>{/* <Dots /> */}</TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={{
-              width: width * 0.33,
-              alignSelf: 'center',
-              marginVertical: 20,
-            }}>
+
+          <TouchableOpacity style={styles.profileImage}>
             <Image
               source={require('../../assets/Images/Icons/Propic.png')}
-              style={{
-                height: height * 0.16,
-                width: width * 0.325,
-                borderRadius: 500,
-                overflow: 'hidden',
-              }}
+              style={styles.profileImageContent}
             />
           </TouchableOpacity>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: '#9E25FE',
-              width: width * 0.92,
-              borderRadius: 20,
-              justifyContent: 'space-between',
-              padding: 10,
-              alignSelf: 'center',
-            }}>
+
+          <View style={styles.benefitsSection}>
             <View>
-              <Text
-                style={{
-                  color: '#FFF',
-                  fontSize: 20,
-                  fontFamily: 'Outfit-SemiBold',
-                }}>
-                Enjoy All Benefits
-              </Text>
-              <Text
-                style={{
-                  color: '#FFF',
-                  width: width * 0.67,
-                  marginVertical: 5,
-                  fontFamily: 'Outfit-Regular',
-                }}>
+              <Text style={styles.benefitsTitle}>Enjoy All Benefits</Text>
+              <Text style={styles.benefitsDescription}>
                 Enjoy Unlimited video calls, Hide distance, Priority Matching
                 without Ads.
               </Text>
               <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Upgrade")
-                }}
-                style={{
-                  backgroundColor: '#FFF',
-                  padding: 5,
-                  borderRadius: 100,
-                  width: width * 0.3,
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}>
-                <Text
-                  style={{
-                    color: '#9E25FE',
-                    fontSize: 18,
-                    fontFamily: 'Outfit-Regular',
-                  }}>
-                  Get VIP
-                </Text>
+                onPress={() => navigation.navigate('Upgrade')}
+                style={styles.getVIPButton}>
+                <Text style={styles.getVIPText}>Get VIP</Text>
               </TouchableOpacity>
             </View>
             <Crown1 />
           </View>
+
           <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Withdraw")
-            }}
-            style={{
-              backgroundColor: '#3F3F3F',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: width * 0.9,
-              alignSelf: 'center',
-              padding: 20,
-              borderRadius: 20,
-              marginVertical: 20,
-            }}>
-            <Text
-              style={{
-                color: '#DD527F',
-                fontSize: 30,
-                fontFamily: 'Outfit-Regular',
-              }}>
-              Balance
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-              }}>
+            onPress={() => navigation.navigate('Withdraw')}
+            style={styles.balanceSection}>
+            <Text style={styles.balanceTitle}>Balance</Text>
+            <View style={styles.balanceAmount}>
               <BIg_Coin />
-              <Text
-                style={{
-                  color: '#FFF',
-                  fontSize: 30,
-                  fontFamily: 'Outfit-Regular',
-                  marginLeft: 20,
-                }}>
-                2000
-              </Text>
+              <Text style={styles.balanceText}>{userData?.rCoin}</Text>
             </View>
           </TouchableOpacity>
+
           <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Store")
-            }}
-            style={{
-              backgroundColor: '#3F3F3F',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: width * 0.9,
-              alignSelf: 'center',
-              padding: 20,
-              borderRadius: 20,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+            onPress={() => navigation.navigate('Store')}
+            style={styles.storeSection}>
+            <View style={styles.storeContent}>
               <Image source={require('../../assets/Images/Icons/BigD.png')} />
-              <Text
-                style={{
-                  color: '#DD527F',
-                  fontSize: 30,
-                  fontFamily: 'Outfit-Regular',
-                  marginLeft: 20,
-                }}>
-                Store
-              </Text>
+              <Text style={styles.storeTitle}>Store</Text>
             </View>
             <Redright />
           </TouchableOpacity>
+
           <TouchableOpacity
-            onPress={() => {
-              setModalVisible(true);
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: width * 0.85,
-              justifyContent: 'space-between',
-              alignSelf: 'center',
-              margin: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+            onPress={() => setModalVisible(true)}
+            style={styles.settingsSection}>
+            <View style={styles.settingsContent}>
               <Sett />
-              <Text
-                style={{
-                  color: '#FFF',
-                  fontSize: 20,
-                  fontFamily: 'Outfit-Regular',
-                  marginLeft: 20,
-                }}>
-                Settings
-              </Text>
+              <Text style={styles.settingsTitle}>Settings</Text>
             </View>
-            <TouchableOpacity
-            >
+            <TouchableOpacity>
               <Whiteright />
             </TouchableOpacity>
           </TouchableOpacity>
+
           <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Help_Center")
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: width * 0.85,
-              justifyContent: 'space-between',
-              alignSelf: 'center',
-              margin: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+            onPress={() => navigation.navigate('Help_Center')}
+            style={styles.helpSection}>
+            <View style={styles.helpContent}>
               <Help />
-              <Text
-                style={{
-                  color: '#FFF',
-                  fontSize: 20,
-                  fontFamily: 'Outfit-Regular',
-                  marginLeft: 20,
-                }}>
-                Help Center
-              </Text>
+              <Text style={styles.helpTitle}>Help Center</Text>
             </View>
             <Whiteright />
           </TouchableOpacity>
-          <View
-            style={{
-              height: 2,
-              width: width * 0.9,
-              backgroundColor: '#FFF',
-              marginBottom: 10,
-              alignSelf: 'center',
-            }}></View>
+
+          <View style={styles.divider} />
+
           <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Welcome');
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: width * 0.85,
-              justifyContent: 'space-between',
-              alignSelf: 'center',
-              margin: 15,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+            onPress={() => navigation.navigate('Welcome')}
+            style={styles.logoutSection}>
+            <View style={styles.logoutContent}>
               <Log />
-              <Text
-                style={{
-                  color: '#DA2D2D',
-                  fontSize: 20,
-                  fontFamily: 'Outfit-Regular',
-                  marginLeft: 20,
-                }}>
-                Logout
-              </Text>
+              <Text style={styles.logoutTitle}>Logout</Text>
             </View>
           </TouchableOpacity>
         </View>
+
         <Modal transparent={true} visible={modalVisible} animationType="slide">
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalVisible(false)
-                  }}>
-
+              <View style={styles.modalHeader}>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
                   <Whiteleft />
                 </TouchableOpacity>
-                <Text
-                  style={{
-                    color: '#FFF',
-                    fontSize: 25,
-                    fontFamily: 'Outfit-Bold',
-                  }}>
-                  Settings
-                </Text>
-                <View
-                  style={{
-                    width: 10,
-                  }}></View>
+                <Text style={styles.modalTitle}>Settings</Text>
+                <View style={styles.modalHeaderSpacer} />
               </View>
+
               <TouchableOpacity
                 onPress={chooseFile}
-                style={{
-                  width: width * 0.25,
-                  alignSelf: 'center',
-                  marginVertical: 20,
-                }}>
+                style={styles.imageContainer}>
                 <Image
-                  resizeMode='cover'
-                  source={filePath || require('../../assets/Images/Icons/Propic.png')}
-                  style={{
-                    height: height * 0.12,
-                    width: width * 0.25,
-                    borderRadius: 100,
-                    overflow: 'hidden',
-                  }}
+                  resizeMode="cover"
+                  source={
+                    filePath || require('../../assets/Images/Icons/Propic.png')
+                  }
+                  style={styles.modalProfileImage}
                 />
-                <View
-                  style={{
-                    position: 'absolute',
-                    bottom: 10,
-                    alignSelf: 'flex-end',
-                  }}>
+                <View style={styles.editIcon}>
                   <Edit />
                 </View>
               </TouchableOpacity>
+
               <View>
-                <Text
-                  style={{
-                    color: '#FFF',
-                    fontSize: 18,
-                    fontFamily: 'Outfit-Regular',
-                  }}>
-                  Name
-                </Text>
+                <Text style={styles.inputLabel}>Name</Text>
                 <TextInput
-                  placeholder='William H.'
-                  placeholderTextColor={"#FFF"}
-                  style={{
-                    borderBottomWidth: 2,
-                    borderColor: '#FFF',
-                    color: '#FFF',
-                    padding: 0,
-                    fontSize: 18,
-                    fontFamily: 'Outifit-Regular',
-                  }}
+                  placeholder="William H."
+                  placeholderTextColor="#FFF"
+                  value={userName}
+                  onChangeText={setUserName}
+                  style={styles.input}
                 />
               </View>
-              <View style={{
-                marginTop: 20
-              }}>
-                <Text
-                  style={{
-                    color: '#FFF',
-                    fontSize: 18,
-                    fontFamily: 'Outfit-Regular',
-                  }}>
-                  Tagline
-                </Text>
+
+              <View style={styles.taglineContainer}>
+                <Text style={styles.inputLabel}>Tagline</Text>
                 <TextInput
-                  placeholder='I am a dancer for last 4 years'
-                  placeholderTextColor={"#FFF"}
-                  style={{
-                    borderBottomWidth: 2,
-                    borderColor: '#FFF',
-                    color: '#FFF',
-                    padding: 0,
-                    fontSize: 18,
-                    fontFamily: 'Outifit-Regular',
-                  }}
+                  placeholder="I am a dancer for the last 4 years"
+                  placeholderTextColor="#FFF"
+                  value={userTagline}
+                  onChangeText={setUserTagline}
+                  style={styles.input}
                 />
               </View>
+
               <TouchableOpacity
                 onPress={() => {
-                  setModalVisible(false)
+                  onUpdate();
+                  setModalVisible(false);
                 }}
-                style={{
-                  margin: 20, width: width * 0.25, alignSelf: "center"
-                }} >
+                style={styles.updateButtonContainer}>
                 <LinearGradient
                   colors={['#FF00FF', '#00FFFF']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    padding: 10, alignItems: "center", borderRadius: 10, width: width * 0.25
-                  }}
-                >
-                  <Text style={{ color: "#FFF", fontSize: 18 }}>Update</Text>
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 1}}
+                  style={styles.updateButton}>
+                  <Text style={styles.updateButtonText}>Update</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -457,11 +307,181 @@ const Profile = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-const { height, width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#120030',
+  },
+  content: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    margin: 20,
+  },
+  headerTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerText: {
+    color: '#FFF',
+    fontSize: 30,
+    fontFamily: 'Outfit-Regular',
+    marginLeft: 20,
+  },
+  profileImage: {
+    width: width * 0.33,
+    alignSelf: 'center',
+    marginVertical: 20,
+  },
+  profileImageContent: {
+    height: height * 0.16,
+    width: width * 0.325,
+    borderRadius: 500,
+    overflow: 'hidden',
+  },
+  benefitsSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#9E25FE',
+    width: width * 0.92,
+    borderRadius: 20,
+    justifyContent: 'space-between',
+    padding: 10,
+    alignSelf: 'center',
+  },
+  benefitsTitle: {
+    color: '#FFF',
+    fontSize: 20,
+    fontFamily: 'Outfit-SemiBold',
+  },
+  benefitsDescription: {
+    color: '#FFF',
+    width: width * 0.67,
+    marginVertical: 5,
+    fontFamily: 'Outfit-Regular',
+  },
+  getVIPButton: {
+    backgroundColor: '#FFF',
+    padding: 5,
+    borderRadius: 100,
+    width: width * 0.3,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  getVIPText: {
+    color: '#9E25FE',
+    fontSize: 18,
+    fontFamily: 'Outfit-Regular',
+  },
+  balanceSection: {
+    backgroundColor: '#3F3F3F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: width * 0.9,
+    alignSelf: 'center',
+    padding: 20,
+    borderRadius: 20,
+    marginVertical: 20,
+  },
+  balanceTitle: {
+    color: '#DD527F',
+    fontSize: 30,
+    fontFamily: 'Outfit-Regular',
+  },
+  balanceAmount: {
+    flexDirection: 'row',
+  },
+  balanceText: {
+    color: '#FFF',
+    fontSize: 30,
+    fontFamily: 'Outfit-Regular',
+    marginLeft: 20,
+  },
+  storeSection: {
+    backgroundColor: '#3F3F3F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: width * 0.9,
+    alignSelf: 'center',
+    padding: 20,
+    borderRadius: 20,
+  },
+  storeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  storeTitle: {
+    color: '#DD527F',
+    fontSize: 30,
+    fontFamily: 'Outfit-Regular',
+    marginLeft: 20,
+  },
+  settingsSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: width * 0.85,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    margin: 15,
+  },
+  settingsContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingsTitle: {
+    color: '#FFF',
+    fontSize: 20,
+    fontFamily: 'Outfit-Regular',
+    marginLeft: 20,
+  },
+  helpSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: width * 0.85,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    margin: 15,
+  },
+  helpContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  helpTitle: {
+    color: '#FFF',
+    fontSize: 20,
+    fontFamily: 'Outfit-Regular',
+    marginLeft: 20,
+  },
+  divider: {
+    height: 2,
+    width: width * 0.9,
+    backgroundColor: '#FFF',
+    marginBottom: 10,
+    alignSelf: 'center',
+  },
+  logoutSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: width * 0.85,
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    margin: 15,
+  },
+  logoutContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoutTitle: {
+    color: '#DA2D2D',
+    fontSize: 20,
+    fontFamily: 'Outfit-Regular',
+    marginLeft: 20,
   },
   modalBackground: {
     flex: 1,
@@ -475,10 +495,64 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
   },
-  option: {
-    paddingVertical: 10,
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  optionText: {
+  modalTitle: {
+    color: '#FFF',
+    fontSize: 25,
+    fontFamily: 'Outfit-Bold',
+  },
+  modalHeaderSpacer: {
+    width: 10,
+  },
+  imageContainer: {
+    width: width * 0.25,
+    alignSelf: 'center',
+    marginVertical: 20,
+  },
+  modalProfileImage: {
+    height: height * 0.12,
+    width: width * 0.25,
+    borderRadius: 100,
+    overflow: 'hidden',
+  },
+  editIcon: {
+    position: 'absolute',
+    bottom: 10,
+    alignSelf: 'flex-end',
+  },
+  inputLabel: {
+    color: '#FFF',
+    fontSize: 18,
+    fontFamily: 'Outfit-Regular',
+  },
+  input: {
+    borderBottomWidth: 2,
+    borderColor: '#FFF',
+    color: '#FFF',
+    padding: 0,
+    fontSize: 18,
+    fontFamily: 'Outfit-Regular',
+  },
+  taglineContainer: {
+    marginTop: 20,
+  },
+  updateButtonContainer: {
+    margin: 20,
+    width: width * 0.25,
+    alignSelf: 'center',
+  },
+  updateButton: {
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 10,
+    width: width * 0.25,
+  },
+  updateButtonText: {
+    color: '#FFF',
     fontSize: 18,
   },
 });

@@ -4,29 +4,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export const addStory = async (data) => {
     try {
+        
+        const acessToken = await AsyncStorage.getItem('userInfo');
+        const token = JSON.parse(acessToken);
+        // console.log(token._id)
         const formData = new FormData();
-        formData.append('file', data.file);
+        formData.append('auth', token._id);
+        formData.append('media', data.file);
         formData.append('caption', data.caption);
 
-        const acessToken = await AsyncStorage.getItem('acessToken');
-        const token = JSON.parse(acessToken);
-
         const res = await axios.put(
-            BASE_URL + 'add-story',
+            BASE_URL + 'addstories/add-story',
             formData,
-            {
-                headers: {
-                    'Authorization': token,
-                    'Content-Type': 'multipart/form-data',
-                }
-            }
+         
         );
         console.log(res?.data)
         alert("Story Added Successfully")
         return res?.data; // Corrected from res.date to res.data
     } catch (error) {
         console.log("Error--->", error)
-        console.log("Error--->", error.response.data.message)
+        console.log("Error--->", error)
     }
 }
 export const getStories = async () => {

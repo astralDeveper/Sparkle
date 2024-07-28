@@ -5,14 +5,99 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  Modal,
   TextInput,
+  FlatList,
+  Modal,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Coin, Whiteleft, Withdrwa} from '../../assets/Images';
-
+import axios from 'axios';
+import {USER} from '../Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {parse, stringify} from 'flatted';
 const Withdraw = ({navigation}) => {
+  const [showPaymentMethods, setShowPaymentMethods] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [rCoin, setrCoin] = useState('');
+  const [paymentGate, setPaymentGate] = useState([
+    'JazzCash',
+    'EasyPaisa',
+    'Payneer',
+    'Bank Account',
+  ]);
+  const [benificary, setbenificary] = useState();
+  const [iBAN, setiBAN] = useState();
+  const [bName, setbName] = useState();
+  const [bAddress, setbAddress] = useState();
+  const [userData, setUserData] = useState();
+
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    'Select Payment Method',
+  );
+
+  const fetchData = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('userInfo');
+      if (accessToken) {
+        const data = parse(accessToken); // Use flatted to parse
+        console.log(data._id);
+        setUserData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching data from AsyncStorage', error);
+    }
+  };
+
+  const onSubmit = async () => {
+    try {
+      const res = await axios.post(USER.BANK_DET, {
+        userId: userData._id,
+        paymentGateway: selectedPaymentMethod,
+        description: bName,
+        accountName: bAddress,
+        accountNumber: iBAN,
+        rCoin: rCoin,
+      });
+      console.log('Response:', res.data);
+    } catch (err) {
+      console.error('Error:', err.response ? err.response.data : err.message);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('userInfo');
+
+        const data = JSON.parse(accessToken);
+        console.log(data._id);
+        setUserData(data);
+      } catch (error) {
+        console.error('Error fetching data from AsyncStorage', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await axios.get(USER.SETTING);
+        // console.log('Response', res.data.setting.rCoinForCashOut);
+        setrCoin(res.data.setting.rCoinForCashOut);
+        // setPaymentGate(res.data.setting.paymentGateway);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getData();
+  }, []);
+
+  const handlePaymentMethodSelect = method => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentMethods(false);
+    setModalVisible(true);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -41,13 +126,12 @@ const Withdraw = ({navigation}) => {
             </Text>
           </View>
           <TouchableOpacity
-          onPress={()=>{
-            navigation.navigate("History")
-          }}
+            onPress={() => {
+              navigation.navigate('History');
+            }}
             style={{
               backgroundColor: '#A349A1',
               padding: 5,
-
               borderRadius: 10,
             }}>
             <Text
@@ -103,14 +187,42 @@ const Withdraw = ({navigation}) => {
             borderRadius: 200,
             alignItems: 'center',
             alignSelf: 'center',
+            flexDirection: 'row',
+            width: width * 0.6,
+            justifyContent: 'space-between',
           }}>
-          <Text
+          <TextInput
+            placeholder={'0'}
+            placeholderTextColor={'#FFF'}
+            value={rCoin}
+            onChangeText={text => {
+              setrCoin(text);
+            }}
+            keyboardType="number-pad"
+            maxLength={4}
             style={{
               color: '#FFF',
               fontSize: 25,
               fontFamily: 'Outfit-SemiBold',
+              padding: 0,
+              width: width * 0.25,
+            }}
+          />
+          <Text
+            style={{
+              color: '#A349A1',
+              fontSize: 25,
+              fontFamily: 'Outfit-SemiBold',
             }}>
-            5000{'          '} <Text style={{color: '#A349A1'}}>={'          '}</Text> 5$
+            =
+          </Text>
+          <Text
+            style={{
+              color: '#A349A1',
+              fontSize: 25,
+              fontFamily: 'Outfit-SemiBold',
+            }}>
+            1$
           </Text>
         </View>
         <Text
@@ -143,7 +255,7 @@ const Withdraw = ({navigation}) => {
           </Text>
           <TouchableOpacity
             onPress={() => {
-              setModalVisible(true);
+              setShowPaymentMethods(!showPaymentMethods);
             }}
             style={{
               backgroundColor: '#1C1C1C',
@@ -151,6 +263,7 @@ const Withdraw = ({navigation}) => {
               alignSelf: 'center',
               padding: 10,
               borderRadius: 10,
+              width: width * 0.7,
             }}>
             <Text
               style={{
@@ -158,13 +271,34 @@ const Withdraw = ({navigation}) => {
                 fontSize: 19,
                 fontFamily: 'Outfit-Regular',
               }}>
-              Select Payment Method
+              {selectedPaymentMethod}
             </Text>
           </TouchableOpacity>
+          {showPaymentMethods && (
+            <View style={{marginTop: 20}}>
+              <FlatList
+                data={paymentGate}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({item}) => (
+                  <TouchableOpacity
+                    onPress={() => handlePaymentMethodSelect(item)}
+                    style={{
+                      padding: 10,
+                      backgroundColor: '#313131',
+                      borderRadius: 10,
+                      marginVertical: 5,
+                      alignItems: 'center',
+                    }}>
+                    <Text style={{color: '#FFF', fontSize: 18}}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          )}
         </View>
         <TouchableOpacity
-          onPress={()=>{
-            navigation.navigate("Congraj")
+          onPress={() => {
+            navigation.navigate('Congraj');
           }}
           style={{
             borderWidth: 2,
@@ -210,6 +344,10 @@ const Withdraw = ({navigation}) => {
               <TextInput
                 placeholder="Beneficiary Name"
                 placeholderTextColor={'#000'}
+                value={benificary}
+                onChange={text => {
+                  setbenificary(text);
+                }}
                 style={{
                   backgroundColor: '#FFF',
                   padding: 5,
@@ -221,8 +359,13 @@ const Withdraw = ({navigation}) => {
                 }}
               />
               <TextInput
-                placeholder="Account Name or IBAN"
+                placeholder="Account No or IBAN"
                 placeholderTextColor={'#000'}
+                keyboardType="number-pad"
+                value={iBAN}
+                onChange={text => {
+                  setiBAN(text);
+                }}
                 style={{
                   backgroundColor: '#FFF',
                   padding: 5,
@@ -236,6 +379,10 @@ const Withdraw = ({navigation}) => {
               <TextInput
                 placeholder="Bank Name"
                 placeholderTextColor={'#000'}
+                value={bName}
+                onChange={text => {
+                  setbName(text);
+                }}
                 style={{
                   backgroundColor: '#FFF',
                   padding: 5,
@@ -249,6 +396,10 @@ const Withdraw = ({navigation}) => {
               <TextInput
                 placeholder="Bank Address"
                 placeholderTextColor={'#000'}
+                value={bAddress}
+                onChange={text => {
+                  setbAddress(text);
+                }}
                 style={{
                   backgroundColor: '#FFF',
                   padding: 5,
@@ -266,9 +417,10 @@ const Withdraw = ({navigation}) => {
                   marginTop: 10,
                 }}>
                 <TouchableOpacity
-                onPress={()=>{
-                    setModalVisible(false)
-                }}
+                  onPress={() => {
+                    onSubmit();
+                    // setModalVisible(false);
+                  }}
                   style={{
                     backgroundColor: '#A349A1',
                     padding: 5,
@@ -278,9 +430,9 @@ const Withdraw = ({navigation}) => {
                   <Text style={{color: '#FFF'}}>Submit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={()=>{
-                    setModalVisible(false)
-                }}
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}
                   style={{
                     backgroundColor: '#A349A1',
                     padding: 5,
@@ -297,6 +449,7 @@ const Withdraw = ({navigation}) => {
     </SafeAreaView>
   );
 };
+
 const {height, width} = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
@@ -310,16 +463,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: 300,
-    backgroundColor: '#110030',
-    borderRadius: 10,
+    backgroundColor: '#313131',
     padding: 20,
-  },
-  option: {
-    paddingVertical: 10,
-  },
-  optionText: {
-    fontSize: 18,
+    borderRadius: 10,
+    width: width * 0.8,
   },
 });
+
 export default Withdraw;

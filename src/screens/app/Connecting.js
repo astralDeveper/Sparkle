@@ -12,14 +12,17 @@ import {
 import {SafeAreaView} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import Svg, {Circle, Defs, LinearGradient, Stop} from 'react-native-svg';
+import axios from 'axios';
+import {USER} from '../Api';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const Connecting = ({navigation, route}) => {
-  const {Alsodata} = route.params;
+  const {Alsodata, userId, interest} = route.params;
   const [milliseconds, setMilliseconds] = useState(0);
   const [get, set] = useState(false);
   const [get1, set1] = useState(false);
+  const [interData, setinterData] = useState([]);
   const animations = useRef(
     [...Array(4)].map(() => new Animated.Value(0)),
   ).current;
@@ -61,13 +64,52 @@ const Connecting = ({navigation, route}) => {
   );
 
   const formattedTime = (milliseconds / 1000).toFixed(2);
+  const Interest = async (userId, interest, setinterData) => {
+    try {
+      const res = await axios.get(`${USER.GET_INTEREST}/${userId}/${interest}`);
+      setinterData(res.data.users || []); // Ensure it's always an array
+    } catch (error) {
+      console.error(error);
+      setinterData([]); // Handle error by setting an empty array
+    }
+  };
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (userId && interest) {
+      // Check if both are defined
+      Interest(userId, interest, setinterData);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex(prevIndex => {
+        const nextIndex = prevIndex + 2;
+        if (nextIndex >= interData.length) {
+          return 0; // Reset to the start if reaching the end
+        }
+        return nextIndex;
+      });
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(timer); // Cleanup timer on unmount
+  }, []);
+
+  // Ensure interData is defined and has items before slicing
+  const itemsToDisplay =
+    interData && interData.length > 0
+      ? interData.slice(currentIndex, currentIndex + 2)
+      : [];
+
+  // console.log('first', itemsToDisplay);
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#120030'}}>
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
         <View>
           <View style={styles.container}>
-            <Svg height="500" width="500" viewBox="0 0 200 200">
+            {/* <Svg height="500" width="500" viewBox="0 0 200 200">
               {[...Array(4)].map((_, index) => (
                 <AnimatedCircle
                   key={index}
@@ -92,7 +134,7 @@ const Connecting = ({navigation, route}) => {
                   <Stop offset="100%" stopColor="#9c27b0" />
                 </LinearGradient>
               </Defs>
-            </Svg>
+            </Svg> */}
           </View>
           <View
             style={{
@@ -111,55 +153,74 @@ const Connecting = ({navigation, route}) => {
             />
           </View>
 
-          {get && (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate(
-                  Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
-               
-                )
-              }
-              style={{
-                position: 'absolute',
-                top: height * 0.2,
-                marginLeft: width * 0.1,
-              }}>
-              <Image
-                source={require('../../assets/Images/Icons/Ma2.png')}
-                style={{
-                  height: height * 0.08,
-                  width: width * 0.15,
-                  borderRadius: 500,
-                  overflow: 'hidden',
-                }}
-              />
-            </TouchableOpacity>
+          {itemsToDisplay.map(
+            (item, index) =>
+              index == 0 && (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate(
+                      Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
+                      {
+                        senderId: item._id,
+                      },
+                    )
+                  }
+                  style={{
+                    position: 'absolute',
+                    top: height * 0.2,
+                    marginLeft: width * 0.1,
+                  }}>
+                  <Image
+                    source={require('../../assets/Images/Icons/Ma2.png')}
+                    style={{
+                      height: height * 0.08,
+                      width: width * 0.15,
+                      borderRadius: 500,
+                      overflow: 'hidden',
+                    }}
+                  />
+                  {/* <Text>
+                      {item._id}
+                    </Text> */}
+                </TouchableOpacity>
+              ),
           )}
 
-          {get1 && (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate(
-                  Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
-                )
-              }
-              style={{
-                position: 'absolute',
-                bottom: height * 0.2,
-                alignSelf: 'flex-end',
-                right: width * 0.15,
-              }}>
-              <Image
-                source={require('../../assets/Images/Icons/Ma3.png')}
-                style={{
-                  height: height * 0.08,
-                  width: width * 0.15,
-                  borderRadius: 500,
-                  overflow: 'hidden',
-                }}
-              />
-            </TouchableOpacity>
+          {/* {get1 && ( */}
+          {itemsToDisplay.map(
+            (item, index) =>
+              index == 1 && (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate(
+                      Alsodata === 'Chat' ? 'Chat_Scre' : 'Video_Call',
+                      {
+                        reciever: item._id,
+                      },
+                    )
+                  }
+                  style={{
+                    position: 'absolute',
+                    bottom: height * 0.2,
+                    alignSelf: 'flex-end',
+                    right: width * 0.15,
+                  }}>
+                  {/* <Text>
+                      {item._id}
+                    </Text> */}
+                  <Image
+                    source={require('../../assets/Images/Icons/Ma3.png')}
+                    style={{
+                      height: height * 0.08,
+                      width: width * 0.15,
+                      borderRadius: 500,
+                      overflow: 'hidden',
+                    }}
+                  />
+                </TouchableOpacity>
+              ),
           )}
+          {/* )} */}
         </View>
         <Text style={styles.timerText}>{formattedTime} s</Text>
         <Text style={styles.timerText}>Connecting...</Text>

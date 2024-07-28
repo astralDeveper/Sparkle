@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -13,10 +13,31 @@ import {Add_Fri, Mag, People, Random} from '../../assets/Images';
 import {Chat_Data, Freiend, Request} from '../../Dummy';
 import {Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import axios from 'axios';
+import { USER } from '../Api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getChatList from '../../components/getlist';
 
 const Messege = ({navigation}) => {
   const scrollViewRef = useRef();
   const [currentScreen, setCurrentScreen] = useState(0);
+  const [userId, setsenderId] = useState();
+  const [chatList, setChatList] = useState([]);
+  console.log("u=================",userId);
+  useEffect(() => {
+    const getdata = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('userInfo');
+        const data = JSON.parse(accessToken);
+        setsenderId(data._id);
+        // setMyId(data._id);
+      } catch (error) {
+        console.error('Error fetching profile details:', error.message);
+      }
+    };
+
+    getdata();
+  }, []);
 
   const scrollToSection = sectionIndex => {
     if (scrollViewRef.current) {
@@ -34,6 +55,87 @@ const Messege = ({navigation}) => {
     setCurrentScreen(sectionIndex);
   };
 
+
+  useEffect(() => {
+    const fetchChatList = async () => {
+      try {
+        const list = await getChatList(userId);
+        setChatList(list);
+        console.log("================");
+        // setLoading(false);
+      } catch (err) {
+        // setError(err.message);
+        // setLoading(false);
+      }
+    };
+
+    // fetchChatList();
+  }, [userId]);
+
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get(USER.GET_ALL_USER, {
+        params: {
+          start: 1,
+          limit: 10,
+          search: 'ALL', // Change this as needed
+          type: 'Fake', // or 'Real' based on your query
+          startDate: 'ALL', // Set appropriate date
+          endDate: 'ALL', // Set appropriate date
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log(response.data);
+        if (response.data.status) {
+          // setUsers(response.data.user);
+        } else {
+          throw new Error(response.data.message || 'Data not found');
+        }
+      } else {
+        throw new Error('Failed to fetch data from server');
+      }
+    } catch (error) {
+      // Network or server error
+      let errorMessage = 'Something went wrong!';
+      if (error.response) {
+        // Server responded with a status other than 200
+        switch (error.response.status) {
+          case 400:
+            errorMessage = 'Bad Request';
+            break;
+          case 401:
+            errorMessage = 'Unauthorized';
+            break;
+          case 403:
+            errorMessage = 'Forbidden';
+            break;
+          case 404:
+            errorMessage = 'Not Found';
+            break;
+          case 500:
+            errorMessage = 'Internal Server Error';
+            break;
+          default:
+            errorMessage = `Unexpected error: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        // Request was made but no response received
+        errorMessage = 'No response from server';
+      } else {
+        // Other errors
+        errorMessage = error.message;
+      }
+      // setError(errorMessage);
+    } finally {
+      // setLoading(false);
+    }
+  };
   const getHeaderText = () => {
     if (currentScreen === 0) {
       return 'Chat';
