@@ -7,11 +7,44 @@ import {
   SafeAreaView,
   FlatList,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Whiteleft} from '../../assets/Images';
 import {Hist} from '../../Dummy';
+import { USER } from '../Api';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const History = ({navigation}) => {
+  const [userData, setUserData] = useState();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('userInfo');
+
+        const data = JSON.parse(accessToken);
+        console.log(data._id);
+        setUserData(data);
+      } catch (error) {
+        console.error('Error fetching data from AsyncStorage', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const getUserRedeem = async () => {
+    try {
+      const response = await axios.get(`${USER.GET_USER_REDEEM}`, {
+        params: { userId:userData._id },
+      });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(()=>{
+    getUserRedeem()
+  },[])
   return (
     <SafeAreaView style={styles.container}>
       <View style={{flex: 1}}>

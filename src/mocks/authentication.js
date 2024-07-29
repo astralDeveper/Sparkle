@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const BASE_URL = 'http://192.168.100.12:5000/';
+export const BASE_URL = 'http://192.168.100.37:5000/';
 // export const BASE_URL = 'http://192.168.100.21:3000/auth/'
 
 export const PostApi = async (data, path) => {

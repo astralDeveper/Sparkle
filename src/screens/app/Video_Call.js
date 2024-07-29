@@ -523,31 +523,63 @@ import {
   Send,
 } from '../../assets/Images';
 import {Gifts} from '../../Dummy';
+import { BASE_URL } from '../../mocks/authentication';
+import sendSignalingData from '../../components/Send_Signal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import YourComponent from '../../components/Global_Rom';
 
 const configuration = {
   iceServers: [{urls: 'stun:stun.l.google.com:19302'}],
 };
 
-const Video_Call = ({navigation}) => {
+const Video_Call = ({navigation,route}) => {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(new MediaStream());
   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [start, setStart] = useState(false);
+  const [userData, setUserData] = useState();
   const [videoAllowed, setVideoAllowed] = useState(false); // New state
-
+  const {reciever} = route.params;
   const pc = useRef(new RTCPeerConnection(configuration));
   const socket = useRef(null);
   const refRBSheet = useRef();
 
   const scrollViewRef = useRef(null);
   useEffect(() => {
+    const getdata = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('userInfo');
+        const data = JSON.parse(accessToken);
+        setUserData(data._id);
+        // setMyId(data._id);
+      } catch (error) {
+        console.error('Error fetching profile details:', error.message);
+      }
+    };
+    // YourComponent()
+    // storeChatTopic()
+    getdata();
+  }, []);
+  useEffect(() => {
+    const generateRandomRoomName = () => {
+      return 'room_:' + Math.random().toString(36).substr(2, 9);
+    };
+
+  const globalRoom = generateRandomRoomName()
     const initializeWebRTC = async () => {
       try {
         await startLocalStream();
 
-        socket.current = io('http://192.168.100.12:3000');
+        socket.current = io("http://192.168.100.37:5000/",{
+          query:{
+            globalRoom
+          },
+          transports: ['websocket'],
+              senderUserId: userData,
+              receiverUserId: reciever,
+        });
 
         socket.current.on('connect', () => {
           console.log('Socket connected');
@@ -566,12 +598,10 @@ const Video_Call = ({navigation}) => {
 
         socket.current.on('offer', async offer => {
           try {
-            await pc.current.setRemoteDescription(
-              new RTCSessionDescription(offer),
-            );
+            await pc.current.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await pc.current.createAnswer();
             await pc.current.setLocalDescription(answer);
-            socket.current.emit('answer', answer);
+            // sendSignalingData('answer', answer, socket.current.id,type, payload, targetUserId);
           } catch (error) {
             console.error('Error handling offer:', error);
           }
@@ -579,9 +609,7 @@ const Video_Call = ({navigation}) => {
 
         socket.current.on('answer', async answer => {
           try {
-            await pc.current.setRemoteDescription(
-              new RTCSessionDescription(answer),
-            );
+            await pc.current.setRemoteDescription(new RTCSessionDescription(answer));
           } catch (error) {
             console.error('Error handling answer:', error);
           }
@@ -602,7 +630,7 @@ const Video_Call = ({navigation}) => {
 
         pc.current.onicecandidate = event => {
           if (event.candidate) {
-            socket.current.emit('candidate', event.candidate);
+            // sendSignalingData('candidate', userData, socket.current.id);
           }
         };
 
@@ -645,7 +673,7 @@ const Video_Call = ({navigation}) => {
       const stream = await mediaDevices.getUserMedia({
         video: true,
         audio: true,
-       displaySurface: 'application'
+        displaySurface: 'application'
       });
       setLocalStream(stream);
       stream.getTracks().forEach(track => pc.current.addTrack(track, stream));
@@ -655,12 +683,12 @@ const Video_Call = ({navigation}) => {
   };
 
   const startCall = async () => {
-    if (videoAllowed) { // Check if the user is allowed to start a call
+    // if (videoAllowed) { // Check if the user is allowed to start a call
       if (socket.current) {
         try {
           const offer = await pc.current.createOffer();
           await pc.current.setLocalDescription(offer);
-          socket.current.emit('offer', offer);
+          // sendSignalingData('offer', offer, socket.current.id);
           setConnectionStatus('Calling');
         } catch (error) {
           console.error('Error starting call:', error);
@@ -668,24 +696,11 @@ const Video_Call = ({navigation}) => {
       } else {
         console.error('Socket not connected');
       }
-    } else {
-      console.log('Video not allowed for this user');
-    }
+    // } else {
+    //   console.log('Video not allowed for this user');
+    // }
   };
 
-  const endCall = () => {
-    if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
-    }
-    if (pc.current) {
-      pc.current.close();
-    }
-    if (socket.current) {
-      socket.current.disconnect();
-    }
-    setConnectionStatus('Disconnected');
-    navigation.navigate("Home");
-  };
 
   const sendMessage = () => {
     if (message.trim()) {
@@ -702,6 +717,21 @@ const Video_Call = ({navigation}) => {
     }
   }, [message]);
 
+
+
+  const endCall = () => {
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    if (pc.current) {
+      pc.current.close();
+    }
+    if (socket.current) {
+      socket.current.disconnect();
+    }
+    setConnectionStatus('Disconnected');
+    navigation.navigate("Home");
+  };
   return (
     <View style={{flex: 1}}>
       <View style={{flex: 1, width: '100%'}}>
@@ -763,7 +793,7 @@ const Video_Call = ({navigation}) => {
               {start ? (
                 <TouchableOpacity
                   onPress={() => {
-                    endCall();
+endCall()
                     setStart(false);
                   }}
                   style={{

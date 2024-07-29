@@ -9,7 +9,7 @@ import {
     TextInput,
     ScrollView,
   } from 'react-native';
-  import React, {useState} from 'react';
+  import React, {useEffect, useState} from 'react';
   import {
     Ads,
     Bell,
@@ -21,9 +21,31 @@ import {
     Whiteleft,
     Withdrwa,
   } from '../../assets/Images';
+import { USER } from '../Api';
+import axios from 'axios';
   
   const Premium = ({navigation}) => {
     const [modalVisible, setModalVisible] = useState(false);
+    // const [VipPlans, setVipPlans] = useState([]);
+    // useEffect(()=>{
+    //   const fetchVIPPlans = async () => {
+    //     try {
+    //       const response = await axios.get(USER.VIP_PLANS);
+    //       console.log(response.data);
+    //       if (response.data.status) {
+    //         setVipPlans(response.data.vipPlan);
+    //       } else {
+    //         setError(response.data.message);
+    //       }
+    //     } catch (err) {
+    //       setError(err.message || 'Server Error');
+    //     } finally {
+    //       setLoading(false);
+    //     }
+    //   };
+    //   fetchVIPPlans()
+    // },[VipPlans])
+    // console.log(VipPlans);
     return (
       <SafeAreaView style={styles.container}>
           <ScrollView>

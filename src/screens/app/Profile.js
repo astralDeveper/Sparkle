@@ -39,7 +39,7 @@ const Profile = ({navigation}) => {
   const [userTagline, setUserTagline] = useState('');
   const [userData, setUserData] = useState();
   const [formData, setFormData] = useState({
-    userId: 'USER_ID',  // Replace with the actual user ID
+    userId: 'USER_ID', // Replace with the actual user ID
     name: '',
     username: '',
     bio: '',
@@ -70,28 +70,23 @@ const Profile = ({navigation}) => {
   //     } else if (response.errorCode) {
   //       console.log('ImagePicker Error: ', response.errorMessage);
   //     } else {
-       
+
   //       setFilePath(response);
   //     }
   //   });
   // };
   // console.log("IDIDIDID",userData?._id)
 
-  const chooseFile  = (field) => {
-    launchImageLibrary({}, (response) => {
+  const chooseFile = field => {
+    launchImageLibrary({}, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorMessage) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else if (response.assets && response.assets.length > 0) {
         const selectedImage = response.assets[0];
-        const source = {
-          uri: selectedImage.uri,
-          type: selectedImage.type,
-          name: selectedImage.fileName
-        };
-        setFilePath(source);
        
+        setFilePath(selectedImage);
       }
     });
   };
@@ -110,43 +105,88 @@ const Profile = ({navigation}) => {
     fetchData();
   }, []);
 
+  // const onUpdate = async() => {
+  //   try {
+  //     const formData = new FormData();
+
+  //     // Append the form fields
+  //     formData.append('userId', userData?._id);
+  //     formData.append('name', userName);
+  //     formData.append('tagline', userTagline); // Ensure you append the tagline
+
+  //     // Append the files if they exist
+  //     if (filePath) {
+  //       formData.append('files', {
+  //         uri: filePath.uri,
+  //         type: filePath.type,
+  //         name: filePath.name,
+  //       });
+  //     }
+
+  //     const response = await axios.put(
+  //       USER.UPDATE_PROFILE,
+  //       {
+  //         userId: userData?._id,
+  //         name: userName,
+  //         tagline: userTagline,
+  //         image: filePath,
+  //       },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       },
+  //     );
+
+  //     if (response.data.status) {
+  //       console.log('Profile updated successfully:', response.data.user);
+  //       // Handle success (e.g., update state, show success message)
+  //     } else {
+  //       console.log('Failed to update profile:', response.data.message);
+  //       // Handle failure (e.g., show error message)
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating profile:', error.message);
+  //     // Handle server error
+  //   }
+  // };
 
 
-  const onUpdate = async profileData => {
-    try {
-      const formData = new FormData();
+  const onUpdate = async () => {
+    const formData = new FormData();
+    if (filePath) {
+      formData.append('image', {
+        uri: filePath.uri,
+        type: filePath.type,
+        name: filePath.fileName,
+      });
+    }
+    // formData.append('email', email);
+    // formData.append('realName', rName);
+    // formData.append('displayName', dName);
+    // formData.append('address', addd);
+    // formData.append('phone', pho);
 
-      // Append the form fields
-      formData.append('userId', userData?._id);
-      formData.append('name', userName);
-      formData.append('username', userName);
-      formData.append('bio', 'bio');
-      formData.append('gender', 'male');
-      formData.append('age', '12');
-      formData.append('tagline', userTagline);
-
-      // Append the files if they exist
-      if (filePath) {
-        formData.append('files', filePath);
-      }
-
-      const response = await axios.put(USER.UPDATE_PROFILE,{userId:userData?._id}, formData, {
+    const res = await axios
+      .put(API.USER.UPDATE_DATA, formData, {
         headers: {
+          Authorization: dToken,
           'Content-Type': 'multipart/form-data',
         },
-      });
+      })
+      .then(res => {
+        console.log('res?.data',res?.data.user);
+        setUserInfo(prevUserInfo => ({
+          ...prevUserInfo,
+          ...res?.data.user
+        }));
 
-      if (response.data.status) {
-        console.log('Profile updated successfully:', response.data.user);
-        // Handle success (e.g., update state, show success message)
-      } else {
-        console.log('Failed to update profile:', response.data.message);
-        // Handle failure (e.g., show error message)
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error.message);
-      // Handle server error
-    }
+        alert('Data Updated Successfully');
+        navigation.goBack()
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   return (

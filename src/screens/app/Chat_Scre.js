@@ -162,6 +162,17 @@ const Chat_Scre = ({navigation, route}) => {
       scrollViewRef.current.scrollToEnd({animated: false});
     }
   }, [messages]);
+
+
+  const addFriend = async () => {
+    try {
+      const response = await axios.post(USER.ADD_FRIENDS, { userId: senderId, friendId:reciever });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response ? error.response.data.message : 'Error adding friend');
+    }
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -182,7 +193,9 @@ const Chat_Scre = ({navigation, route}) => {
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={()=>{
+          addFriend()
+        }}>
           <Add_Fri />
           <Text style={styles.actionText}>Add Friend</Text>
         </TouchableOpacity>

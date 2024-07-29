@@ -2,7 +2,7 @@ import { launchImageLibrary } from "react-native-image-picker";
 
 export const chooseFile = async (setFilePath) => {
     let options = {
-        mediaType: 'video', // 'photo', 'video', or 'mixed'
+        mediaType: 'mixed', // 'photo', 'video', or 'mixed'
         maxWidth: 300,
         maxHeight: 550,
         quality: 1,

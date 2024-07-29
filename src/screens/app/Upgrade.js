@@ -9,7 +9,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Ads,
   Bell,
@@ -21,9 +21,41 @@ import {
   Whiteleft,
   Withdrwa,
 } from '../../assets/Images';
+import axios from 'axios';
+import { USER } from '../Api';
 
 const Upgrade = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [VipPlans, setVipPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  useEffect(()=>{
+    const fetchVIPPlans = async () => {
+      try {
+        const response = await axios.get(USER.VIP_PLANS);
+        console.log(response.data);
+        if (response.data.status) {
+          // const data = response.data.map(data)
+          setVipPlans(response.data.vipPlan);
+        } else {
+          alert(response.data.message);
+        }
+      } catch (err) {
+        alert(err.message || 'Server Error');
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchVIPPlans()
+  },[])
+//   const extractAndSetData = () => {
+//     if (VipPlans.length > 0) {
+//         const [firstPlan] = VipPlans;  // Destructure the array to get the first object
+//         setSelectedPlan(firstPlan);    // Update the state with the object
+//     } else {
+//         Alert.alert('No Data', 'No VIP plans available to extract.');
+//     }
+// };
+  console.log("jhsasjajh",VipPlans);
   return (
     <SafeAreaView style={styles.container}>
         <ScrollView>

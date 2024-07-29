@@ -6,7 +6,7 @@ const Splash = ({ navigation }) => {
   const isAuth = async () => {
     const acessToken = await AsyncStorage.getItem('acessToken');
     const token = JSON.parse(acessToken);
-    console.log(token)
+    console.log('YourTOken',token)
     setTimeout(() => {
       if (token === null) navigation.replace('Welcome')
       else navigation.replace('BottomTabs')

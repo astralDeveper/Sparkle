@@ -79,16 +79,18 @@ const Messege = ({navigation}) => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(USER.GET_ALL_USER, {
-        params: {
-          start: 1,
-          limit: 10,
-          search: 'ALL', // Change this as needed
-          type: 'Fake', // or 'Real' based on your query
-          startDate: 'ALL', // Set appropriate date
-          endDate: 'ALL', // Set appropriate date
-        },
-      });
+      const response = await axios.get(USER.GET_ALL_USER, 
+        // {
+        // params: {
+        //   start: 1,
+        //   limit: 10,
+        //   search: 'ALL', // Change this as needed
+        //   type: 'Fake', // or 'Real' based on your query
+        //   startDate: 'ALL', // Set appropriate date
+        //   endDate: 'ALL', // Set appropriate date
+        // },
+      // }
+    );
   
       if (response.status === 200) {
         console.log(response.data);

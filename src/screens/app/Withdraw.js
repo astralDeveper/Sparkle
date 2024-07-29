@@ -25,10 +25,9 @@ const Withdraw = ({navigation}) => {
     'Payneer',
     'Bank Account',
   ]);
-  const [benificary, setbenificary] = useState();
-  const [iBAN, setiBAN] = useState();
-  const [bName, setbName] = useState();
-  const [bAddress, setbAddress] = useState();
+  const [bName, setBName] = useState('');
+  const [bAddress, setBAddress] = useState('');
+  const [iBAN, setIBAN] = useState('');
   const [userData, setUserData] = useState();
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
@@ -50,19 +49,24 @@ const Withdraw = ({navigation}) => {
 
   const onSubmit = async () => {
     try {
-      const res = await axios.post(USER.BANK_DET, {
-        userId: userData._id,
+      const dataToSend = {
+        userId: userData?._id,
         paymentGateway: selectedPaymentMethod,
         description: bName,
         accountName: bAddress,
         accountNumber: iBAN,
         rCoin: rCoin,
-      });
+      };
+
+      console.log('Data to be sent:', dataToSend);
+
+      const res = await axios.post(USER.BANK_DET, dataToSend);
       console.log('Response:', res.data);
     } catch (err) {
       console.error('Error:', err.response ? err.response.data : err.message);
     }
-  };
+  }
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -344,9 +348,9 @@ const Withdraw = ({navigation}) => {
               <TextInput
                 placeholder="Beneficiary Name"
                 placeholderTextColor={'#000'}
-                value={benificary}
+                value={bAddress}
                 onChange={text => {
-                  setbenificary(text);
+                  setBAddress(text);
                 }}
                 style={{
                   backgroundColor: '#FFF',
@@ -361,10 +365,10 @@ const Withdraw = ({navigation}) => {
               <TextInput
                 placeholder="Account No or IBAN"
                 placeholderTextColor={'#000'}
-                keyboardType="number-pad"
+                // keyboardType=""
                 value={iBAN}
                 onChange={text => {
-                  setiBAN(text);
+                  setIBAN(text);
                 }}
                 style={{
                   backgroundColor: '#FFF',
@@ -381,7 +385,7 @@ const Withdraw = ({navigation}) => {
                 placeholderTextColor={'#000'}
                 value={bName}
                 onChange={text => {
-                  setbName(text);
+                  setBName(text);
                 }}
                 style={{
                   backgroundColor: '#FFF',
@@ -398,7 +402,7 @@ const Withdraw = ({navigation}) => {
                 placeholderTextColor={'#000'}
                 value={bAddress}
                 onChange={text => {
-                  setbAddress(text);
+                  setBAddress(text);
                 }}
                 style={{
                   backgroundColor: '#FFF',
